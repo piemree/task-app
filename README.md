@@ -6,7 +6,7 @@ This project is a comprehensive workflow application for managing projects and t
 
 This project is configured as a monorepo using PNPM Workspace. It contains two main packages:
 
-- `packages/frontend`: Frontend application built with Next.js (under development)
+- `packages/frontend`: Frontend application built with Next.js 15 (App Router)
 - `packages/api`: REST API built with Express.js, TypeScript, and MongoDB
 
 The overall project structure is as follows:
@@ -20,7 +20,13 @@ The overall project structure is as follows:
 │   │   ├── tsconfig.json    # TypeScript configuration
 │   │   └── package.json     # Package dependencies
 │   │
-│   └── frontend/            # Frontend application (under development)
+│   └── frontend/            # Frontend application
+│       ├── app/             # Next.js App Router pages
+│       ├── components/      # React components
+│       ├── lib/             # Utility functions and libraries
+│       ├── services/        # API services
+│       ├── public/          # Static assets
+│       └── package.json     # Package dependencies
 │
 ├── node_modules/            # Root dependencies
 ├── package.json             # Root package configuration
@@ -33,7 +39,12 @@ The overall project structure is as follows:
 
 ### Frontend
 
-(Under development)
+- **Frontend Framework**: Next.js 14 (App Router)
+- **State Management**: Redux Toolkit
+- **UI Components**: shadcn/ui
+- **Styling**: Tailwind CSS
+- **Form Handling**: React Hook Form with Zod validation
+- **Authentication**: JWT-based authentication
 
 ### API (Backend)
 
@@ -57,6 +68,8 @@ The overall project structure is as follows:
 - **Task Status Logs**: Monitoring status changes of tasks
 - **Notification System**: Real-time notifications (integrated with Socket.io)
 - **Email Notifications**: Automatic email notifications for important events
+- **User Interface**: Clean and intuitive interface for managing projects and tasks
+- **Responsive Design**: Works on desktop and mobile devices
 
 ## Development
 
@@ -96,7 +109,77 @@ MAIL_PASS="mail_pass"
 ```bash
 # Run the API
 pnpm --filter @task-app/api dev
+
+# Run the Frontend
+pnpm --filter @task-app/frontend dev
 ```
+
+### Frontend Structure
+
+```
+packages/frontend/
+├── app/                    # Next.js App Router pages
+│   ├── auth/               # Authentication pages
+│   ├── dashboard/          # Dashboard and project pages
+│   ├── layout.tsx          # Root layout
+│   └── page.tsx            # Home page
+├── components/             # React components
+│   ├── auth/               # Authentication components
+│   ├── dashboard/          # Dashboard components
+│   ├── projects/           # Project-related components
+│   ├── tasks/              # Task-related components
+│   ├── profile/            # User profile components
+│   ├── ui/                 # UI components (shadcn/ui)
+│   └── redux-provider.tsx  # Redux provider component
+├── lib/                    # Utility functions and libraries
+│   ├── redux/              # Redux store and slices
+│   │   ├── hooks.ts        # Redux hooks
+│   │   ├── store.ts        # Redux store configuration
+│   │   └── slices/         # Redux slices
+│   └── utils.ts            # Utility functions
+├── services/               # API services
+│   ├── auth-service.ts     # Authentication service
+│   ├── project-service.ts  # Project service
+│   ├── task-service.ts     # Task service
+│   └── notification-service.ts # Notification service
+└── public/                 # Static assets
+```
+
+### Frontend Architecture
+
+The frontend application follows a clean architecture pattern with the following layers:
+
+1. **Presentation Layer**: React components and pages
+2. **State Management Layer**: Redux store, slices, and actions
+3. **Service Layer**: API services for data fetching and manipulation
+4. **Model Layer**: TypeScript interfaces and types
+
+#### Redux Architecture
+
+The application uses Redux Toolkit for state management with the following slices:
+
+1. **authSlice**: Manages user authentication state, including login, registration, and profile information.
+2. **projectSlice**: Manages project-related state, including project list, current project, and project operations.
+3. **taskSlice**: Manages task-related state, including task list, current task, and task operations.
+4. **notificationSlice**: Manages notification-related state, including notification list and unread count.
+
+Each slice follows a similar pattern:
+- State definition with TypeScript interfaces
+- Initial state configuration
+- Async thunks for API calls
+- Reducers for state updates
+- Extra reducers for handling async thunk states (pending, fulfilled, rejected)
+
+#### Authentication Flow
+
+The application uses a token-based authentication system:
+
+1. User logs in with email and password
+2. Server validates credentials and returns a JWT token
+3. Token is stored in localStorage and cookies
+4. Token is used for subsequent API requests
+5. On application load, the token is checked and user profile is fetched if token exists
+6. On logout, token is removed from localStorage and cookies
 
 ### API Documentation
 
