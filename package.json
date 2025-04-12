@@ -1,0 +1,22 @@
+{
+	"name": "task-app",
+	"version": "1.0.0",
+	"description": "İleri Düzey Görev Yönetim ve İş Akışı Uygulaması",
+	"private": true,
+	"scripts": {
+		"dev": "pnpm --stream -r dev",
+		"build": "pnpm --stream -r build",
+		"start": "pnpm --stream -r start",
+		"lint": "pnpm --stream -r lint"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"packageManager": "pnpm@10.6.4",
+	"workspaces": [
+		"packages/*"
+	],
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4"
+	}
+}
