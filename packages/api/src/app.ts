@@ -3,16 +3,14 @@ import { OpenApiGeneratorV3 } from "@asteasolutions/zod-to-openapi";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
-import mongoose from "mongoose";
 import PrettyError from "pretty-error";
 import swaggerUi from "swagger-ui-express";
-import config from "./config/config";
-
 import { globalErrorHandler } from "./handlers/global-error.handler";
 // Routes
 import { notFoundHandler } from "./handlers/not-found.handler";
 import { openApiDocument, registry } from "./openapi";
 import routes from "./routes";
+import { connectDB } from "./utils/connect-db.util";
 // Load environment variables
 dotenv.config();
 
@@ -28,16 +26,7 @@ Error.prepareStackTrace = (err, stack) => {
 };
 
 // MongoDB Bağlantısı
-mongoose
-	.connect(config.databaseUrl)
-	.then(() => {
-		console.log("MongoDB connected successfully");
-	})
-	.catch((error) => {
-		console.error("MongoDB connection error:", error);
-		process.exit(1);
-	});
-
+connectDB();
 // Create Express app
 const app = express();
 
