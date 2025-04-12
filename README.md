@@ -39,7 +39,7 @@ The overall project structure is as follows:
 
 ### Frontend
 
-- **Frontend Framework**: Next.js 14 (App Router)
+- **Frontend Framework**: Next.js 15 (App Router)
 - **State Management**: Redux Toolkit
 - **UI Components**: shadcn/ui
 - **Styling**: Tailwind CSS
