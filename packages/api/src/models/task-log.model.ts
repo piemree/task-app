@@ -1,8 +1,8 @@
 import { type Document, Schema, model } from "mongoose";
-import { type TaskLogInput, logActionEnumSchema } from "../schemas/task-log.schema";
+import { type TaskLogDbSchema, logActionEnumSchema } from "../schemas/task-log.schema";
 import { taskPriorityEnumSchema, taskStatusEnumSchema } from "../schemas/task.schema";
 
-export interface ITaskLog extends TaskLogInput, Document {
+export interface ITaskLog extends Omit<TaskLogDbSchema, "_id">, Document {
 	_id: string;
 }
 

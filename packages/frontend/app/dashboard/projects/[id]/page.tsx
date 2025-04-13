@@ -1,15 +1,16 @@
-import type { Metadata } from "next"
-import { ProjectDetail } from "@/components/projects/project-detail"
+import { ProjectDetail } from "@/components/projects/project-detail";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Proje Detayı",
-  description: "Proje detayları ve görevler",
-}
+	title: "Proje Detayı",
+	description: "Proje detayları ve görevler",
+};
 
-export default function ProjectDetailPage({
-  params,
+export default async function ProjectDetailPage({
+	params,
 }: {
-  params: { id: string }
+	params: Promise<{ id: string }>;
 }) {
-  return <ProjectDetail projectId={params.id} />
+	const { id } = await params;
+	return <ProjectDetail projectId={id} />;
 }

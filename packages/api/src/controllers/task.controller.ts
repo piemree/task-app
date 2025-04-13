@@ -3,8 +3,8 @@ import { catchAsync } from "../handlers/async-error.handler";
 import { userIdSchema } from "../schemas/auth.schema";
 import { projectIdSchema } from "../schemas/project.schema";
 import {
-	createTaskSchema,
 	projectIdAndTaskIdSchema,
+	taskInputSchema,
 	taskPrioritySchema,
 	taskStatusSchema,
 	updateTaskSchema,
@@ -15,7 +15,7 @@ import { validateObject } from "../utils/validate-request.util";
 const taskService = new TaskService();
 
 export const createTask = catchAsync(async (req: Request, res: Response) => {
-	const validatedRequest = validateObject(req.body, createTaskSchema);
+	const validatedRequest = validateObject(req.body, taskInputSchema);
 	const validatedParams = validateObject(req.params, projectIdSchema);
 	const result = await taskService.createTask({
 		data: validatedRequest,
@@ -69,6 +69,7 @@ export const changeTaskStatus = catchAsync(async (req: Request, res: Response) =
 export const changeAssignedUser = catchAsync(async (req: Request, res: Response) => {
 	const validatedParams = validateObject(req.params, projectIdAndTaskIdSchema);
 	const validatedRequest = validateObject(req.body, userIdSchema);
+
 	const result = await taskService.changeAssignedUser({
 		taskId: validatedParams.taskId,
 		projectId: validatedParams.projectId,

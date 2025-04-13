@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { userResponseSchema } from "./auth.schema";
 import { objectIdSchema } from "./mongoose.schema";
 
 export const userProjectRoleSchema = z.enum(["admin", "manager", "developer"]).describe("Kullanıcı rolü").openapi({
@@ -6,6 +7,7 @@ export const userProjectRoleSchema = z.enum(["admin", "manager", "developer"]).d
 });
 
 export const projectDbSchema = z.object({
+	_id: objectIdSchema,
 	name: z.string().min(1).openapi({
 		example: "Project Name",
 	}),
@@ -19,15 +21,16 @@ export const projectDbSchema = z.object({
 			role: userProjectRoleSchema,
 		}),
 	),
-	createdAt: z.date().optional().openapi({
+	createdAt: z.date().openapi({
 		example: "2021-01-01",
 	}),
-	updatedAt: z.date().optional().openapi({
+	updatedAt: z.date().openapi({
 		example: "2021-01-01",
 	}),
 });
 
-export const createProjectSchema = projectDbSchema.omit({
+export const projectInputSchema = projectDbSchema.omit({
+	_id: true,
 	owner: true,
 	members: true,
 	createdAt: true,
@@ -57,9 +60,27 @@ export const removeMemberSchema = projectIdSchema.extend({
 	userId: objectIdSchema,
 });
 
-export type ProjectRole = z.infer<typeof userProjectRoleSchema>;
+export const projectMemberSchema = z.object({
+	_id: objectIdSchema,
+	role: userProjectRoleSchema,
+	user: userResponseSchema,
+});
 
-export type ProjectInput = z.infer<typeof projectDbSchema>;
-export type CreateProjectInput = z.infer<typeof createProjectSchema>;
+export const projectResponseSchema = projectDbSchema.extend({
+	owner: userResponseSchema,
+	members: z.array(projectMemberSchema),
+	createdAt: z.date(),
+	updatedAt: z.date(),
+});
+
+export const projectListResponseSchema = z.array(projectResponseSchema);
+
+export type ProjectRole = z.infer<typeof userProjectRoleSchema>;
+export type ProjectDbSchema = z.infer<typeof projectDbSchema>;
+export type ProjectMember = z.infer<typeof projectMemberSchema>;
+export type ProjectInput = z.infer<typeof projectInputSchema>;
 export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
 export type ProjectIdParams = z.infer<typeof projectIdSchema>;
+export type ProjectResponse = z.infer<typeof projectResponseSchema>;
+export type InviteUserInput = z.infer<typeof inviteUserSchema>;
+export type InviteTokenInput = z.infer<typeof inviteTokenSchema>;

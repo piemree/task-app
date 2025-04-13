@@ -1,37 +1,31 @@
-// Mock auth service
-type RegisterData = {
-  firstName: string
-  lastName: string
-  email: string
-  password: string
-}
+import type {
+	LoginInput,
+	LoginResponse,
+	RegisterInput,
+	RegisterResponse,
+	UpdateUserProfileInput,
+	UserResponse,
+} from "@schemas/auth.schema";
+import { api } from "../lib/api";
 
 export const authService = {
-  register: async (data: RegisterData) => {
-    // Mock API call
-    return { success: true }
-  },
+	register: async (data: RegisterInput) => {
+		const response = await api.post<RegisterResponse>("/auth/register", data);
+		return response;
+	},
 
-  login: async (email: string, password: string) => {
-    // Mock API call
-    return {
-      token: "mock-jwt-token",
-      user: {
-        _id: "u1",
-        firstName: "Emre",
-        lastName: "Demir",
-        email: email,
-      },
-    }
-  },
+	login: async (data: LoginInput) => {
+		const response = await api.post<LoginResponse>("/auth/login", data);
+		return response;
+	},
 
-  getProfile: async () => {
-    // Mock API call
-    return {
-      _id: "u1",
-      firstName: "Emre",
-      lastName: "Demir",
-      email: "emre.demir@sirket.com",
-    }
-  },
-}
+	getProfile: async () => {
+		const response = await api.get<UserResponse>("/auth/profile");
+		return response;
+	},
+
+	updateProfile: async (data: UpdateUserProfileInput) => {
+		const response = await api.put<UserResponse>("/auth/profile", data);
+		return response;
+	},
+};

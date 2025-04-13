@@ -1,6 +1,7 @@
 import { z } from "zod";
+import { userResponseSchema } from "./auth.schema";
 import { objectIdSchema } from "./mongoose.schema";
-import { taskPriorityEnumSchema, taskStatusEnumSchema } from "./task.schema";
+import { taskDbSchema, taskPriorityEnumSchema, taskStatusEnumSchema } from "./task.schema";
 
 // LogAction için zod enum
 export const logActionEnumSchema = z
@@ -25,6 +26,7 @@ export const taskChangesSchema = z
 
 // TaskLog için temel şema
 export const taskLogDbSchema = z.object({
+	_id: objectIdSchema,
 	task: objectIdSchema,
 	action: logActionEnumSchema,
 	previousStatus: taskStatusEnumSchema.optional(),
@@ -35,16 +37,17 @@ export const taskLogDbSchema = z.object({
 	newAssignee: objectIdSchema.optional(),
 	changedBy: objectIdSchema,
 	changes: taskChangesSchema,
-	createdAt: z.date().optional().openapi({
+	createdAt: z.date().openapi({
 		example: "2023-05-10T15:30:00Z",
 	}),
-	updatedAt: z.date().optional().openapi({
+	updatedAt: z.date().openapi({
 		example: "2023-05-10T15:30:00Z",
 	}),
 });
 
 // TaskLog oluşturma şeması
-export const createTaskLogSchema = taskLogDbSchema.omit({
+export const taskLogInputSchema = taskLogDbSchema.omit({
+	_id: true,
 	createdAt: true,
 	updatedAt: true,
 });
@@ -59,10 +62,19 @@ export const getTaskLogsParamsSchema = z.object({
 	taskId: objectIdSchema,
 });
 
-// Type tanımlamaları
+export const taskLogResponseSchema = taskLogDbSchema.extend({
+	task: taskDbSchema,
+	previousAssignee: userResponseSchema,
+	newAssignee: userResponseSchema,
+	changedBy: userResponseSchema,
+});
+
+export const taskLogListResponseSchema = z.array(taskLogResponseSchema);
+
 export type LogActionEnum = z.infer<typeof logActionEnumSchema>;
-export type TaskLogInput = z.infer<typeof taskLogDbSchema>;
-export type CreateTaskLogInput = z.infer<typeof createTaskLogSchema>;
+export type TaskLogDbSchema = z.infer<typeof taskLogDbSchema>;
+export type TaskLogInput = z.infer<typeof taskLogInputSchema>;
 export type GetTaskLogByIdParams = z.infer<typeof getTaskLogByIdSchema>;
 export type GetTaskLogsByTaskParams = z.infer<typeof getTaskLogsParamsSchema>;
 export type TaskChanges = z.infer<typeof taskChangesSchema>;
+export type TaskLogResponse = z.infer<typeof taskLogResponseSchema>;

@@ -28,7 +28,7 @@ Error.prepareStackTrace = (err, stack) => {
 // MongoDB Bağlantısı
 connectDB();
 // Create Express app
-const app = express();
+const app: express.Application = express();
 
 // Middleware
 app.use(cors());

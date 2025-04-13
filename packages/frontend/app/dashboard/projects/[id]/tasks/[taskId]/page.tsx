@@ -1,15 +1,16 @@
-import type { Metadata } from "next"
-import { TaskDetail } from "@/components/tasks/task-detail"
+import { TaskDetail } from "@/components/tasks/task-detail";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Görev Detayı",
-  description: "Görev detayları ve günlükler",
-}
+	title: "Görev Detayı",
+	description: "Görev detayları ve günlükler",
+};
 
-export default function TaskDetailPage({
-  params,
+export default async function TaskDetailPage({
+	params,
 }: {
-  params: { id: string; taskId: string }
+	params: Promise<{ id: string; taskId: string }>;
 }) {
-  return <TaskDetail projectId={params.id} taskId={params.taskId} />
+	const { id, taskId } = await params;
+	return <TaskDetail projectId={id} taskId={taskId} />;
 }

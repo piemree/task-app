@@ -18,8 +18,8 @@ export const getUnreadNotifications = async (req: Request, res: Response) => {
 };
 
 export const markAsRead = async (req: Request, res: Response) => {
-	await notificationService.markAsRead({
+	const data = await notificationService.markAsRead({
 		userId: req.user?._id ?? "",
 	});
-	res.status(200).json({ success: true });
+	res.status(200).json(data);
 };

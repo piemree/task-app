@@ -1,5 +1,7 @@
 import express, { type Router } from "express";
 
+import { successResponseSchema } from "@schemas/helper.schema";
+import { notificationListResponseSchema } from "@schemas/notification.schema";
 import { getUnreadNotifications, markAsRead } from "../controllers/notification.controller";
 import { getNotifications } from "../controllers/notification.controller";
 import { auth } from "../middlewares/auth.middleware";
@@ -12,12 +14,17 @@ const router: Router = express.Router({ mergeParams: true });
 registry.registerPath({
 	tags: ["Notification"],
 	method: "get",
-	path: "/api/projects/{projectId}/notifications",
+	path: "/api/notifications",
 	description: "Get new notifications",
 	security: [{ bearerAuth: [] }],
 	responses: {
-		201: {
+		200: {
 			description: "Notifications successfully retrieved",
+			content: {
+				"application/json": {
+					schema: registry.register("NotificationListResponse", notificationListResponseSchema),
+				},
+			},
 		},
 	},
 });
@@ -26,12 +33,17 @@ registry.registerPath({
 registry.registerPath({
 	tags: ["Notification"],
 	method: "get",
-	path: "/api/projects/{projectId}/notifications/unread",
+	path: "/api/notifications/unread",
 	description: "Get unread notifications",
 	security: [{ bearerAuth: [] }],
 	responses: {
 		201: {
 			description: "Unread notifications successfully retrieved",
+			content: {
+				"application/json": {
+					schema: registry.register("NotificationListResponse", notificationListResponseSchema),
+				},
+			},
 		},
 	},
 });
@@ -40,19 +52,24 @@ registry.registerPath({
 registry.registerPath({
 	tags: ["Notification"],
 	method: "post",
-	path: "/api/projects/{projectId}/notifications/read",
+	path: "/api/notifications/read",
 	description: "Mark notifications as read",
 	security: [{ bearerAuth: [] }],
 	responses: {
 		201: {
 			description: "Notifications successfully marked as read",
+			content: {
+				"application/json": {
+					schema: registry.register("SuccessResponse", successResponseSchema),
+				},
+			},
 		},
 	},
 });
 
 // Express rotalarını tanımla
-router.get("/", auth, developerAccess, getNotifications);
-router.get("/unread", auth, developerAccess, getUnreadNotifications);
-router.post("/read", auth, developerAccess, markAsRead);
+router.get("/", auth, getNotifications);
+router.get("/unread", auth, getUnreadNotifications);
+router.post("/read", auth, markAsRead);
 
 export default router;

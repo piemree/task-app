@@ -1,61 +1,19 @@
-// Mock notification service
+import type { NotificationResponse } from "@schemas/notification.schema";
+import { api } from "../lib/api";
+
 export const notificationService = {
-  getNotifications: async (projectId: string) => {
-    // Mock API call
-    return [
-      {
-        _id: "1",
-        project: {
-          _id: projectId,
-          name: "Web Uygulaması",
-        },
-        task: {
-          _id: "t1",
-          title: "Tasarım Revizyonu",
-        },
-        action: "task_assigned",
-        isRead: false,
-        createdAt: new Date().toISOString(),
-      },
-      {
-        _id: "2",
-        project: {
-          _id: projectId,
-          name: "Web Uygulaması",
-        },
-        task: {
-          _id: "t2",
-          title: "API Entegrasyonu",
-        },
-        action: "task_status_changed",
-        isRead: true,
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-      },
-    ]
-  },
+	getNotifications: async () => {
+		const response = await api.get<NotificationResponse[]>("/notifications");
+		return response;
+	},
 
-  getUnreadNotifications: async (projectId: string) => {
-    // Mock API call
-    return [
-      {
-        _id: "1",
-        project: {
-          _id: projectId,
-          name: "Web Uygulaması",
-        },
-        task: {
-          _id: "t1",
-          title: "Tasarım Revizyonu",
-        },
-        action: "task_assigned",
-        isRead: false,
-        createdAt: new Date().toISOString(),
-      },
-    ]
-  },
+	getUnreadNotifications: async () => {
+		const response = await api.get<NotificationResponse[]>("/notifications/unread");
+		return response;
+	},
 
-  markAsRead: async (projectId: string) => {
-    // Mock API call
-    return { success: true }
-  },
-}
+	markAsRead: async () => {
+		const response = await api.post<NotificationResponse[]>("/notifications/read");
+		return response;
+	},
+};

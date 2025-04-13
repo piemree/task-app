@@ -1,7 +1,8 @@
 import { type Document, Schema, model } from "mongoose";
-import type { NotificationInput } from "../schemas/notification.schema";
+import type { NotificationDbSchema } from "../schemas/notification.schema";
 import { logActionEnumSchema } from "../schemas/task-log.schema";
-export interface INotification extends NotificationInput, Document {
+
+export interface INotification extends Omit<NotificationDbSchema, "_id">, Document {
 	_id: string;
 }
 

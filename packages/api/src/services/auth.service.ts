@@ -1,7 +1,15 @@
 import { AppError } from "../error/app-error";
 import { errorMessages } from "../error/error-messages";
 import { User } from "../models/user.model";
-import type { LoginInput, RegisterInput } from "../schemas/auth.schema";
+import type {
+	LoginInput,
+	LoginResponse,
+	RegisterInput,
+	RegisterResponse,
+	UpdateUserProfileInput,
+	UserResponse,
+} from "../schemas/auth.schema";
+import { omit } from "../utils/omit.util";
 import { TokenService } from "./token.service";
 
 export class AuthService {
@@ -11,7 +19,7 @@ export class AuthService {
 		this.tokenService = new TokenService();
 	}
 
-	async register(args: { data: RegisterInput }) {
+	async register(args: { data: RegisterInput }): Promise<RegisterResponse> {
 		// Email kontrolü
 		const existingUser = await User.findOne({ email: args.data.email });
 		if (existingUser) {
@@ -21,10 +29,10 @@ export class AuthService {
 		// Yeni kullanıcı oluştur
 		const user = await User.create(args.data);
 
-		return user;
+		return omit(user.toObject(), ["password"]);
 	}
 
-	async login(args: { data: LoginInput }) {
+	async login(args: { data: LoginInput }): Promise<LoginResponse> {
 		// Kullanıcıyı bul
 		const user = await User.findOne({ email: args.data.email });
 		if (!user) {
@@ -41,17 +49,25 @@ export class AuthService {
 		const token = this.tokenService.generateAuthToken({ _id: user._id, email: user.email });
 
 		return {
-			user,
+			user: omit(user.toObject(), ["password"]),
 			token,
 		};
 	}
 
-	async getUserProfile(args: { userId: string }) {
+	async getUserProfile(args: { userId: string }): Promise<UserResponse> {
 		const user = await User.findById(args.userId);
 		if (!user) {
 			throw new AppError(errorMessages.USER_NOT_FOUND, 404);
 		}
 
-		return user;
+		return omit(user.toObject(), ["password"]);
+	}
+
+	async updateUserProfile(args: { userId: string; data: UpdateUserProfileInput }): Promise<UserResponse> {
+		const user = await User.findByIdAndUpdate(args.userId, args.data, { new: true });
+		if (!user) {
+			throw new AppError(errorMessages.USER_NOT_FOUND, 404);
+		}
+		return omit(user.toObject(), ["password"]);
 	}
 }

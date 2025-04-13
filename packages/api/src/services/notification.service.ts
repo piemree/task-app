@@ -1,7 +1,10 @@
-import type { Server, Socket } from "socket.io";
+import type { Server } from "socket.io";
 import { getIO } from "../config/socket";
 import { Notification } from "../models/notification.model";
-import type { NotificationInput, NotificationSocketInput } from "../schemas/notification.schema";
+import type { IProject } from "../models/project.model";
+import type { ITask } from "../models/task.model";
+import type { IUser } from "../models/user.model";
+import type { NotificationInput, NotificationResponse, NotificationSocketSchema } from "../schemas/notification.schema";
 
 export class NotificationService {
 	private io: Server | null = null;
@@ -17,24 +20,44 @@ export class NotificationService {
 		return this.io as Server;
 	}
 
-	public async sendProjectNotification(args: { data: NotificationSocketInput }) {
+	public async sendProjectNotification(args: { data: NotificationSocketSchema }) {
 		const io = this.getSocketIO();
 		if (io) {
 			io.to(`project:${args.data.project}`).emit("project-notification", args.data);
 		}
 	}
 
+	private async findManyNotification(args: { userId?: string; isRead?: boolean }): Promise<NotificationResponse[]> {
+		const query = {};
+
+		if (args.userId) {
+			Object.assign(query, { user: args.userId });
+		}
+
+		if (args.isRead !== undefined) {
+			Object.assign(query, { isRead: args.isRead });
+		}
+
+		const notifications = await Notification.find(query)
+			.populate<{ user: IUser }>({ path: "user", select: "-password" })
+			.populate<{ task: ITask }>({ path: "task" })
+			.populate<{ project: IProject }>({ path: "project" });
+
+		return notifications;
+	}
+
 	public async markAsRead(args: { userId: string }) {
 		await Notification.updateMany({ user: args.userId }, { isRead: true });
+		return { success: true };
 	}
 
 	public async getNotifications(args: { userId: string }) {
-		const notifications = await Notification.find({ user: args.userId });
+		const notifications = await this.findManyNotification({ userId: args.userId });
 		return notifications;
 	}
 
 	public async getUnreadNotifications(args: { userId: string }) {
-		const notifications = await Notification.find({ user: args.userId, isRead: false });
+		const notifications = await this.findManyNotification({ userId: args.userId, isRead: false });
 		return notifications;
 	}
 

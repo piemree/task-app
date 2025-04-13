@@ -1,3 +1,4 @@
+import { successResponseSchema } from "@schemas/helper.schema";
 import express, { type Router } from "express";
 import {
 	changeAssignedUser,
@@ -10,14 +11,16 @@ import {
 	updateTask,
 } from "../controllers/task.controller";
 import { auth } from "../middlewares/auth.middleware";
-import { adminAccess, developerAccess, managerAccess, protectProject } from "../middlewares/protect-project.middleware";
+import { developerAccess, managerAccess } from "../middlewares/protect-project.middleware";
 import { registry } from "../openapi";
 import { userIdSchema } from "../schemas/auth.schema";
-import { projectIdSchema, userProjectRoleSchema } from "../schemas/project.schema";
+import { projectIdSchema } from "../schemas/project.schema";
 import {
-	createTaskSchema,
 	projectIdAndTaskIdSchema,
+	taskInputSchema,
+	taskListResponseSchema,
 	taskPrioritySchema,
+	taskResponseSchema,
 	taskStatusSchema,
 	updateTaskSchema,
 } from "../schemas/task.schema";
@@ -36,7 +39,7 @@ registry.registerPath({
 		body: {
 			content: {
 				"application/json": {
-					schema: registry.register("CreateTaskSchema", createTaskSchema),
+					schema: registry.register("CreateTaskSchema", taskInputSchema),
 				},
 			},
 		},
@@ -44,6 +47,11 @@ registry.registerPath({
 	responses: {
 		201: {
 			description: "Task successfully created",
+			content: {
+				"application/json": {
+					schema: registry.register("TaskResponse", taskResponseSchema),
+				},
+			},
 		},
 	},
 });
@@ -68,6 +76,11 @@ registry.registerPath({
 	responses: {
 		200: {
 			description: "Task successfully updated",
+			content: {
+				"application/json": {
+					schema: registry.register("SuccessResponse", successResponseSchema),
+				},
+			},
 		},
 	},
 });
@@ -85,6 +98,11 @@ registry.registerPath({
 	responses: {
 		200: {
 			description: "Task details successfully retrieved",
+			content: {
+				"application/json": {
+					schema: registry.register("TaskResponse", taskResponseSchema),
+				},
+			},
 		},
 	},
 });
@@ -102,6 +120,11 @@ registry.registerPath({
 	responses: {
 		200: {
 			description: "Tasks successfully retrieved",
+			content: {
+				"application/json": {
+					schema: registry.register("TaskListResponse", taskListResponseSchema),
+				},
+			},
 		},
 	},
 });
@@ -126,6 +149,11 @@ registry.registerPath({
 	responses: {
 		200: {
 			description: "Task status changed",
+			content: {
+				"application/json": {
+					schema: registry.register("SuccessResponse", successResponseSchema),
+				},
+			},
 		},
 	},
 });
@@ -150,6 +178,11 @@ registry.registerPath({
 	responses: {
 		200: {
 			description: "Task assigned user changed",
+			content: {
+				"application/json": {
+					schema: registry.register("SuccessResponse", successResponseSchema),
+				},
+			},
 		},
 	},
 });
@@ -170,6 +203,11 @@ registry.registerPath({
 	responses: {
 		200: {
 			description: "Task priority changed",
+			content: {
+				"application/json": {
+					schema: registry.register("SuccessResponse", successResponseSchema),
+				},
+			},
 		},
 	},
 });

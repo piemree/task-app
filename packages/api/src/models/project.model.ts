@@ -1,7 +1,7 @@
 import { type Document, Schema, model } from "mongoose";
-import { type ProjectInput, userProjectRoleSchema } from "../schemas/project.schema";
+import { type ProjectDbSchema, userProjectRoleSchema } from "../schemas/project.schema";
 
-export interface IProject extends ProjectInput, Document {
+export interface IProject extends Omit<ProjectDbSchema, "_id">, Document {
 	_id: string;
 }
 

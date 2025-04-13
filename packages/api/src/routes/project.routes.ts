@@ -1,3 +1,4 @@
+import { successResponseSchema } from "@schemas/helper.schema";
 import express, { type Router } from "express";
 import {
 	acceptInvite,
@@ -13,13 +14,14 @@ import { auth } from "../middlewares/auth.middleware";
 import { adminAccess, managerAccess, protectProject } from "../middlewares/protect-project.middleware";
 import { registry } from "../openapi";
 import {
-	createProjectSchema,
 	inviteTokenSchema,
 	inviteUserSchema,
 	projectIdSchema,
+	projectInputSchema,
+	projectListResponseSchema,
+	projectResponseSchema,
 	removeMemberSchema,
 	updateProjectSchema,
-	userProjectRoleSchema,
 } from "../schemas/project.schema";
 
 const router: Router = express.Router();
@@ -35,7 +37,7 @@ registry.registerPath({
 		body: {
 			content: {
 				"application/json": {
-					schema: registry.register("CreateProjectSchema", createProjectSchema),
+					schema: registry.register("CreateProjectSchema", projectInputSchema),
 				},
 			},
 		},
@@ -43,6 +45,11 @@ registry.registerPath({
 	responses: {
 		201: {
 			description: "Project successfully created",
+			content: {
+				"application/json": {
+					schema: registry.register("ProjectResponse", projectResponseSchema),
+				},
+			},
 		},
 	},
 });
@@ -66,6 +73,11 @@ registry.registerPath({
 	responses: {
 		200: {
 			description: "Project successfully updated",
+			content: {
+				"application/json": {
+					schema: registry.register("ProjectResponse", projectResponseSchema),
+				},
+			},
 		},
 	},
 });
@@ -82,6 +94,11 @@ registry.registerPath({
 	responses: {
 		200: {
 			description: "Project details successfully retrieved",
+			content: {
+				"application/json": {
+					schema: registry.register("ProjectResponse", projectResponseSchema),
+				},
+			},
 		},
 	},
 });
@@ -95,6 +112,11 @@ registry.registerPath({
 	responses: {
 		200: {
 			description: "Projects successfully retrieved",
+			content: {
+				"application/json": {
+					schema: registry.register("ProjectListResponse", projectListResponseSchema),
+				},
+			},
 		},
 	},
 });
@@ -118,6 +140,11 @@ registry.registerPath({
 	responses: {
 		200: {
 			description: "Invite project members",
+			content: {
+				"application/json": {
+					schema: registry.register("SuccessResponse", successResponseSchema),
+				},
+			},
 		},
 	},
 });
@@ -134,22 +161,38 @@ registry.registerPath({
 	responses: {
 		200: {
 			description: "Project successfully deleted",
+			content: {
+				"application/json": {
+					schema: registry.register("SuccessResponse", successResponseSchema),
+				},
+			},
 		},
 	},
 });
 
 registry.registerPath({
 	tags: ["Projects"],
-	method: "get",
-	path: "/api/projects/accept-invite/{inviteToken}",
+	method: "post",
+	path: "/api/projects/accept-invite",
 	description: "Become a project member using invite token",
 	security: [{ bearerAuth: [] }],
 	request: {
-		params: registry.register("InviteTokenSchema", inviteTokenSchema),
+		body: {
+			content: {
+				"application/json": {
+					schema: registry.register("InviteTokenSchema", inviteTokenSchema),
+				},
+			},
+		},
 	},
 	responses: {
 		200: {
 			description: "Became project member",
+			content: {
+				"application/json": {
+					schema: registry.register("SuccessResponse", successResponseSchema),
+				},
+			},
 		},
 	},
 });
@@ -166,6 +209,11 @@ registry.registerPath({
 	responses: {
 		200: {
 			description: "Project member deleted",
+			content: {
+				"application/json": {
+					schema: registry.register("SuccessResponse", successResponseSchema),
+				},
+			},
 		},
 	},
 });
@@ -175,7 +223,7 @@ router.put("/:projectId", auth, managerAccess, updateProject);
 router.get("/:projectId", auth, getProject);
 router.get("/", auth, getProjects);
 router.post("/:projectId/invite", auth, managerAccess, inviteUser);
-router.get("/accept-invite/:inviteToken", acceptInvite);
+router.post("/accept-invite", acceptInvite);
 router.delete("/:projectId", auth, adminAccess, deleteProject);
 router.delete("/:projectId/members/:userId", auth, managerAccess, removeMember);
 

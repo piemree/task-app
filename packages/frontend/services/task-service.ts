@@ -1,162 +1,45 @@
-// Mock task service
-type CreateTaskData = {
-  title: string
-  description: string
-  status?: "pending" | "in_progress" | "completed"
-  priority?: "low" | "medium" | "high"
-  assignedTo: string
-}
-
-type UpdateTaskData = {
-  title?: string
-  description?: string
-}
+import type { TaskLogResponse } from "@schemas/task-log.schema";
+import type { TaskInput, TaskPriorityEnum, TaskResponse, TaskStatusEnum, UpdateTaskInput } from "@schemas/task.schema";
+import { api } from "../lib/api";
 
 export const taskService = {
-  createTask: async (projectId: string, data: CreateTaskData) => {
-    // Mock API call
-    return {
-      _id: "t1",
-      title: data.title,
-      description: data.description,
-      status: data.status || "pending",
-      priority: data.priority || "medium",
-      project: projectId,
-      assignedTo: {
-        _id: data.assignedTo,
-        firstName: "Ayşe",
-        lastName: "Yılmaz",
-      },
-      createdBy: {
-        _id: "u1",
-        firstName: "Emre",
-        lastName: "Demir",
-      },
-      createdAt: new Date().toISOString(),
-    }
-  },
+	createTask: async (projectId: string, data: TaskInput) => {
+		const response = await api.post<TaskResponse>(`/projects/${projectId}/tasks`, data);
+		return response;
+	},
 
-  getTasks: async (projectId: string) => {
-    // Mock API call
-    return [
-      {
-        _id: "t1",
-        title: "Tasarım Revizyonu",
-        description: "Ana sayfa tasarımında revizyonlar yapılacak",
-        status: "pending",
-        priority: "high",
-        project: projectId,
-        assignedTo: {
-          _id: "u2",
-          firstName: "Ayşe",
-          lastName: "Yılmaz",
-        },
-        createdBy: {
-          _id: "u1",
-          firstName: "Emre",
-          lastName: "Demir",
-        },
-        createdAt: new Date().toISOString(),
-      },
-      {
-        _id: "t2",
-        title: "API Entegrasyonu",
-        description: "Ödeme API'si entegrasyonu yapılacak",
-        status: "in_progress",
-        priority: "medium",
-        project: projectId,
-        assignedTo: {
-          _id: "u1",
-          firstName: "Emre",
-          lastName: "Demir",
-        },
-        createdBy: {
-          _id: "u1",
-          firstName: "Emre",
-          lastName: "Demir",
-        },
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-      },
-    ]
-  },
+	getTasks: async (projectId: string) => {
+		const response = await api.get<TaskResponse[]>(`/projects/${projectId}/tasks`);
+		return response;
+	},
 
-  getTask: async (projectId: string, taskId: string) => {
-    // Mock API call
-    return {
-      _id: taskId,
-      title: "Tasarım Revizyonu",
-      description: "Ana sayfa tasarımında revizyonlar yapılacak",
-      status: "pending",
-      priority: "high",
-      project: projectId,
-      assignedTo: {
-        _id: "u2",
-        firstName: "Ayşe",
-        lastName: "Yılmaz",
-      },
-      createdBy: {
-        _id: "u1",
-        firstName: "Emre",
-        lastName: "Demir",
-      },
-      createdAt: new Date().toISOString(),
-    }
-  },
+	getTask: async (projectId: string, taskId: string) => {
+		const response = await api.get<TaskResponse>(`/projects/${projectId}/tasks/${taskId}`);
+		return response;
+	},
 
-  updateTask: async (projectId: string, taskId: string, data: UpdateTaskData) => {
-    // Mock API call
-    return {
-      _id: taskId,
-      ...data,
-    }
-  },
+	updateTask: async (projectId: string, taskId: string, data: UpdateTaskInput) => {
+		const response = await api.put<TaskResponse>(`/projects/${projectId}/tasks/${taskId}`, data);
+		return response;
+	},
 
-  changeStatus: async (projectId: string, taskId: string, status: string) => {
-    // Mock API call
-    return { success: true }
-  },
+	changeStatus: async (projectId: string, taskId: string, status: TaskStatusEnum) => {
+		const response = await api.put<TaskResponse>(`/projects/${projectId}/tasks/${taskId}/status`, { status });
+		return response;
+	},
 
-  changeAssignee: async (projectId: string, taskId: string, userId: string) => {
-    // Mock API call
-    return { success: true }
-  },
+	changeAssignee: async (projectId: string, taskId: string, userId: string) => {
+		const response = await api.put<TaskResponse>(`/projects/${projectId}/tasks/${taskId}/assigned-to`, { userId });
+		return response;
+	},
 
-  changePriority: async (projectId: string, taskId: string, priority: string) => {
-    // Mock API call
-    return { success: true }
-  },
+	changePriority: async (projectId: string, taskId: string, priority: TaskPriorityEnum) => {
+		const response = await api.put<TaskResponse>(`/projects/${projectId}/tasks/${taskId}/priority`, { priority });
+		return response;
+	},
 
-  getTaskLogs: async (projectId: string, taskId: string) => {
-    // Mock API call
-    return [
-      {
-        _id: "l1",
-        task: taskId,
-        action: "task_created",
-        changedBy: {
-          _id: "u1",
-          firstName: "Emre",
-          lastName: "Demir",
-        },
-        changes: {},
-        createdAt: new Date().toISOString(),
-      },
-      {
-        _id: "l2",
-        task: taskId,
-        action: "status_changed",
-        previousStatus: "pending",
-        newStatus: "in_progress",
-        changedBy: {
-          _id: "u2",
-          firstName: "Ayşe",
-          lastName: "Yılmaz",
-        },
-        changes: {
-          status: "in_progress",
-        },
-        createdAt: new Date(Date.now() - 3600000).toISOString(),
-      },
-    ]
-  },
-}
+	getTaskLogs: async (projectId: string, taskId: string) => {
+		const response = await api.get<TaskLogResponse[]>(`/projects/${projectId}/tasks/${taskId}/logs`);
+		return response;
+	},
+};

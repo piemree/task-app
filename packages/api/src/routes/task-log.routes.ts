@@ -1,3 +1,4 @@
+import { taskLogListResponseSchema } from "@schemas/task-log.schema";
 import express, { type Router } from "express";
 import { getTaskLogs } from "../controllers/task-logs.controller";
 import { auth } from "../middlewares/auth.middleware";
@@ -19,6 +20,11 @@ registry.registerPath({
 	responses: {
 		200: {
 			description: "Task logs successfully retrieved",
+			content: {
+				"application/json": {
+					schema: registry.register("TaskLogListResponse", taskLogListResponseSchema),
+				},
+			},
 		},
 	},
 });

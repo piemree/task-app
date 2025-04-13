@@ -1,7 +1,7 @@
 import { type Document, Schema, model } from "mongoose";
-import { type TaskInput, taskPriorityEnumSchema, taskStatusEnumSchema } from "../schemas/task.schema";
+import { type TaskDbSchema, taskPriorityEnumSchema, taskStatusEnumSchema } from "../schemas/task.schema";
 
-export interface ITask extends TaskInput, Document {
+export interface ITask extends Omit<TaskDbSchema, "_id">, Document {
 	_id: string;
 }
 

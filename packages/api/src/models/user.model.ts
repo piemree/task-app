@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs";
 import { type CallbackError, type Document, Schema, model } from "mongoose";
-import type { UserInput } from "../schemas/auth.schema";
+import type { UserDbSchema } from "../schemas/auth.schema";
 
-export interface IUser extends UserInput, Document {
+export interface IUser extends Omit<UserDbSchema, "_id">, Document {
 	_id: string;
 	comparePassword(candidatePassword: string): Promise<boolean>;
 }
@@ -33,6 +33,7 @@ const userSchema = new Schema<IUser>(
 		},
 	},
 	{
+		timestamps: true,
 		versionKey: false,
 	},
 );

@@ -1,10 +1,10 @@
 import type { Request, Response } from "express";
 import { catchAsync } from "../handlers/async-error.handler";
 import {
-	createProjectSchema,
 	inviteTokenSchema,
 	inviteUserSchema,
 	projectIdSchema,
+	projectInputSchema,
 	removeMemberSchema,
 	updateProjectSchema,
 } from "../schemas/project.schema";
@@ -14,7 +14,7 @@ import { validateObject } from "../utils/validate-request.util";
 const projectService = new ProjectService();
 
 export const createProject = catchAsync(async (req: Request, res: Response) => {
-	const validatedRequest = validateObject(req.body, createProjectSchema);
+	const validatedRequest = validateObject(req.body, projectInputSchema);
 	const result = await projectService.createProject({
 		data: validatedRequest,
 		userId: req.user?._id || "",
@@ -59,8 +59,8 @@ export const inviteUser = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const acceptInvite = catchAsync(async (req: Request, res: Response) => {
-	const validatedParams = validateObject(req.params, inviteTokenSchema);
-	const result = await projectService.acceptInvite(validatedParams.inviteToken);
+	const validatedRequest = validateObject(req.body, inviteTokenSchema);
+	const result = await projectService.acceptInvite(validatedRequest.inviteToken);
 	res.status(200).json(result);
 });
 

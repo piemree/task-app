@@ -1,169 +1,50 @@
-// Mock project service
-type CreateProjectData = {
-  name: string
-  description?: string
-}
-
-type UpdateProjectData = {
-  name?: string
-  description?: string
-  members?: {
-    user: string
-    role: string
-  }[]
-}
-
-type InviteUserData = {
-  email: string
-  role: string
-}
+import type {
+	InviteTokenInput,
+	InviteUserInput,
+	ProjectInput,
+	ProjectResponse,
+	UpdateProjectInput,
+} from "@schemas/project.schema";
+import { api } from "../lib/api";
 
 export const projectService = {
-  createProject: async (data: CreateProjectData) => {
-    // Mock API call
-    return {
-      _id: "1",
-      name: data.name,
-      description: data.description,
-      owner: {
-        _id: "u1",
-        firstName: "Emre",
-        lastName: "Demir",
-      },
-      members: [
-        {
-          _id: "m1",
-          user: {
-            _id: "u1",
-            firstName: "Emre",
-            lastName: "Demir",
-          },
-          role: "admin",
-        },
-      ],
-      createdAt: new Date().toISOString(),
-    }
-  },
+	createProject: async (data: ProjectInput) => {
+		const response = await api.post<ProjectResponse>("/projects", data);
+		return response;
+	},
 
-  getProjects: async () => {
-    // Mock API call
-    return [
-      {
-        _id: "1",
-        name: "Web Uygulaması",
-        description: "Müşteri için web uygulaması geliştirme projesi",
-        owner: {
-          _id: "u1",
-          firstName: "Emre",
-          lastName: "Demir",
-        },
-        members: [
-          {
-            _id: "m1",
-            user: {
-              _id: "u1",
-              firstName: "Emre",
-              lastName: "Demir",
-            },
-            role: "admin",
-          },
-          {
-            _id: "m2",
-            user: {
-              _id: "u2",
-              firstName: "Ayşe",
-              lastName: "Yılmaz",
-            },
-            role: "developer",
-          },
-        ],
-        createdAt: new Date().toISOString(),
-      },
-      {
-        _id: "2",
-        name: "Mobil Uygulama",
-        description: "iOS ve Android için mobil uygulama geliştirme",
-        owner: {
-          _id: "u1",
-          firstName: "Emre",
-          lastName: "Demir",
-        },
-        members: [
-          {
-            _id: "m1",
-            user: {
-              _id: "u1",
-              firstName: "Emre",
-              lastName: "Demir",
-            },
-            role: "admin",
-          },
-        ],
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-      },
-    ]
-  },
+	getProjects: async () => {
+		const response = await api.get<ProjectResponse[]>("/projects");
+		return response;
+	},
 
-  getProject: async (id: string) => {
-    // Mock API call
-    return {
-      _id: id,
-      name: "Web Uygulaması",
-      description: "Müşteri için web uygulaması geliştirme projesi",
-      owner: {
-        _id: "u1",
-        firstName: "Emre",
-        lastName: "Demir",
-      },
-      members: [
-        {
-          _id: "m1",
-          user: {
-            _id: "u1",
-            firstName: "Emre",
-            lastName: "Demir",
-          },
-          role: "admin",
-        },
-        {
-          _id: "m2",
-          user: {
-            _id: "u2",
-            firstName: "Ayşe",
-            lastName: "Yılmaz",
-          },
-          role: "developer",
-        },
-      ],
-      createdAt: new Date().toISOString(),
-    }
-  },
+	getProject: async (id: string) => {
+		const response = await api.get<ProjectResponse>(`/projects/${id}`);
+		return response;
+	},
 
-  updateProject: async (id: string, data: UpdateProjectData) => {
-    // Mock API call
-    return {
-      _id: id,
-      ...data,
-    }
-  },
+	updateProject: async (id: string, data: UpdateProjectInput) => {
+		const response = await api.put<ProjectResponse>(`/projects/${id}`, data);
+		return response;
+	},
 
-  deleteProject: async (id: string) => {
-    // Mock API call
-    return { success: true }
-  },
+	deleteProject: async (id: string) => {
+		await api.delete<ProjectResponse>(`/projects/${id}`);
+		return { success: true };
+	},
 
-  inviteUser: async (projectId: string, data: InviteUserData) => {
-    // Mock API call
-    return { success: true }
-  },
+	inviteUser: async (projectId: string, data: InviteUserInput) => {
+		await api.post<ProjectResponse>(`/projects/${projectId}/invite`, data);
+		return { success: true };
+	},
 
-  acceptInvite: async (token: string) => {
-    // Mock API call
-    return { success: true }
-  },
+	acceptInvite: async (data: InviteTokenInput) => {
+		const response = await api.post<{ success: boolean; isUnRegistered: boolean }>("/projects/accept-invite", data);
+		return response;
+	},
 
-  removeMember: async (projectId: string, userId: string) => {
-    // Mock API call
-    return { success: true }
-  },
-}
+	removeMember: async (projectId: string, userId: string) => {
+		await api.delete<ProjectResponse>(`/projects/${projectId}/members/${userId}`);
+		return { success: true };
+	},
+};
