@@ -2,6 +2,14 @@
 
 This project is a comprehensive workflow application for managing projects and tasks.
 
+## Live Environment
+
+You can access the live version of the application through these links:
+
+- **Frontend**: [https://task-app-frontend-black.vercel.app](https://task-app-frontend-black.vercel.app)
+- **API**: [https://task-app-api-j1sb.onrender.com](https://task-app-api-j1sb.onrender.com)
+- **API Documentation**: [https://task-app-api-j1sb.onrender.com/docs](https://task-app-api-j1sb.onrender.com/docs)
+
 ## Project Structure
 
 This project is configured as a monorepo using PNPM Workspace. It contains two main packages:
