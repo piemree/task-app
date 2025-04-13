@@ -1,12 +1,11 @@
 import express, { type Router } from "express";
 
-import { successResponseSchema } from "@schemas/helper.schema";
-import { notificationListResponseSchema } from "@schemas/notification.schema";
 import { getUnreadNotifications, markAsRead } from "../controllers/notification.controller";
 import { getNotifications } from "../controllers/notification.controller";
 import { auth } from "../middlewares/auth.middleware";
-import { developerAccess } from "../middlewares/protect-project.middleware";
 import { registry } from "../openapi";
+import { successResponseSchema } from "../schemas/helper.schema";
+import { notificationListResponseSchema } from "../schemas/notification.schema";
 
 const router: Router = express.Router({ mergeParams: true });
 

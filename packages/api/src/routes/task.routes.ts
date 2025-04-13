@@ -1,4 +1,3 @@
-import { successResponseSchema } from "@schemas/helper.schema";
 import express, { type Router } from "express";
 import {
 	changeAssignedUser,
@@ -14,6 +13,7 @@ import { auth } from "../middlewares/auth.middleware";
 import { developerAccess, managerAccess } from "../middlewares/protect-project.middleware";
 import { registry } from "../openapi";
 import { userIdSchema } from "../schemas/auth.schema";
+import { successResponseSchema } from "../schemas/helper.schema";
 import { projectIdSchema } from "../schemas/project.schema";
 import {
 	projectIdAndTaskIdSchema,

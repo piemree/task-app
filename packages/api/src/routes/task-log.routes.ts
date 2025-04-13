@@ -1,9 +1,9 @@
-import { taskLogListResponseSchema } from "@schemas/task-log.schema";
 import express, { type Router } from "express";
 import { getTaskLogs } from "../controllers/task-logs.controller";
 import { auth } from "../middlewares/auth.middleware";
 import { developerAccess } from "../middlewares/protect-project.middleware";
 import { registry } from "../openapi";
+import { taskLogListResponseSchema } from "../schemas/task-log.schema";
 import { projectIdAndTaskIdSchema } from "../schemas/task.schema";
 
 const router: Router = express.Router({ mergeParams: true });

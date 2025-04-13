@@ -1,4 +1,3 @@
-import { successResponseSchema } from "@schemas/helper.schema";
 import express, { type Router } from "express";
 import {
 	acceptInvite,
@@ -13,6 +12,7 @@ import {
 import { auth } from "../middlewares/auth.middleware";
 import { adminAccess, managerAccess, protectProject } from "../middlewares/protect-project.middleware";
 import { registry } from "../openapi";
+import { successResponseSchema } from "../schemas/helper.schema";
 import {
 	inviteTokenSchema,
 	inviteUserSchema,
