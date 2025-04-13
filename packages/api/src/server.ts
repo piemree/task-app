@@ -7,6 +7,6 @@ const server = createServer(app);
 setupSocket(server);
 
 server.listen(config.port, () => {
-	console.log(`Server running on http://localhost:${config.port} in ${config.nodeEnv} mode`);
-	console.log(`OpenAPI document: http://localhost:${config.port}/docs`);
+	console.log(`Server running on ${config.apiUrl} in ${config.nodeEnv} mode`);
+	console.log(`OpenAPI document: ${config.apiUrl}/docs`);
 });
