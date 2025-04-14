@@ -52,4 +52,12 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max 
+          cache-to: type=gha,mode=max
+
+      # Başarılı build sonrası webhook gönder
+      - name: Send success webhook notification
+        if: success()
+        uses: distributhor/workflow-webhook@v3
+        with:
+          webhook_url: ${{ secrets.WEBHOOK_URL }}
+          data: '{"event": "build_success", "repository": "${{ github.repository }}", "workflow": "${{ github.workflow }}", "run_id": "${{ github.run_id }}", "run_number": "${{ github.run_number }}", "image_name": "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}", "commit_sha": "${{ github.sha }}" }' 
