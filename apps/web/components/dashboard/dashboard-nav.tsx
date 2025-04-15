@@ -1,10 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useAppDispatch } from "@/lib/redux/hooks";
+import { logout } from "@/lib/redux/slices/authSlice";
 import { cn } from "@/lib/utils";
-import { FolderPlus, LayoutDashboard, Settings, Users } from "lucide-react";
+import { FolderPlus, LayoutDashboard, LogOut, Settings, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const items = [
 	{
@@ -26,6 +29,13 @@ const items = [
 
 export function DashboardNav() {
 	const pathname = usePathname();
+	const dispatch = useAppDispatch();
+	const router = useRouter();
+
+	const handleLogout = () => {
+		dispatch(logout());
+		router.push("/auth/login");
+	};
 
 	return (
 		<nav className="grid items-start gap-2 p-4">
@@ -43,6 +53,10 @@ export function DashboardNav() {
 					</Link>
 				);
 			})}
+			<Button variant="ghost" className="w-full justify-start gap-2" onClick={handleLogout}>
+				<LogOut className="h-4 w-4" />
+				Çıkış Yap
+			</Button>
 		</nav>
 	);
 }
