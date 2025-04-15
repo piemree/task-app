@@ -42,7 +42,12 @@ const formSchema = z.object({
 	}),
 });
 
-export function NewTaskDialog({ projectId }: { projectId: string }) {
+interface NewTaskDialogProps {
+	projectId: string;
+	onSuccess: () => void;
+}
+
+export function NewTaskDialog({ projectId, onSuccess }: NewTaskDialogProps) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [project, setProject] = useState<ProjectResponse | null>(null);
@@ -85,6 +90,7 @@ export function NewTaskDialog({ projectId }: { projectId: string }) {
 			});
 			setIsOpen(false);
 			form.reset();
+			onSuccess();
 		} catch (error) {
 			toast({
 				variant: "destructive",

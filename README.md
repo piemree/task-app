@@ -6,29 +6,29 @@ This project is a comprehensive workflow application for managing projects and t
 
 You can access the live version of the application through these links:
 
-- **Frontend**: [https://task-app-frontend-black.vercel.app](https://task-app-frontend-black.vercel.app)
-- **API**: [https://task-app-api-j1sb.onrender.com](https://task-app-api-j1sb.onrender.com)
-- **API Documentation**: [https://task-app-api-j1sb.onrender.com/docs](https://task-app-api-j1sb.onrender.com/docs)
+- **Frontend**: [https://taskapp.emredemir.tech](https://taskapp.emredemir.tech)
+- **API**: [https://taskapi.emredemir.tech](https://taskapi.emredemir.tech)
+- **API Documentation**: [https://taskapi.emredemir.tech/docs](https://taskapi.emredemir.tech/docs)
 
 ## Project Structure
 
-This project is configured as a monorepo using PNPM Workspace. It contains two main packages:
+This project is configured as a monorepo using PNPM Workspace. It contains two main apps:
 
-- `packages/frontend`: Frontend application built with Next.js 15 (App Router)
-- `packages/api`: REST API built with Express.js, TypeScript, and MongoDB
+- `apps/frontend`: Frontend application built with Next.js 15 (App Router)
+- `apps/api`: REST API built with Express.js, TypeScript, and MongoDB
 
 The overall project structure is as follows:
 
 ```
 /
-├── packages/
+├── apps/
 │   ├── api/                 # Backend API
 │   │   ├── src/             # Source code
 │   │   ├── public/          # Public assets
 │   │   ├── tsconfig.json    # TypeScript configuration
 │   │   └── package.json     # Package dependencies
 │   │
-│   └── frontend/            # Frontend application
+│   └── web/            # Frontend application
 │       ├── app/             # Next.js App Router pages
 │       ├── components/      # React components
 │       ├── lib/             # Utility functions and libraries
@@ -45,7 +45,7 @@ The overall project structure is as follows:
 
 ## Technologies
 
-### Frontend
+### Web
 
 - **Frontend Framework**: Next.js 15 (App Router)
 - **State Management**: Redux Toolkit
@@ -125,7 +125,7 @@ pnpm --filter @task-app/frontend dev
 ### Frontend Structure
 
 ```
-packages/frontend/
+apps/web/
 ├── app/                    # Next.js App Router pages
 │   ├── auth/               # Authentication pages
 │   ├── dashboard/          # Dashboard and project pages
@@ -167,9 +167,6 @@ The frontend application follows a clean architecture pattern with the following
 The application uses Redux Toolkit for state management with the following slices:
 
 1. **authSlice**: Manages user authentication state, including login, registration, and profile information.
-2. **projectSlice**: Manages project-related state, including project list, current project, and project operations.
-3. **taskSlice**: Manages task-related state, including task list, current task, and task operations.
-4. **notificationSlice**: Manages notification-related state, including notification list and unread count.
 
 Each slice follows a similar pattern:
 - State definition with TypeScript interfaces
@@ -200,7 +197,7 @@ http://localhost:5000/docs
 ### API Structure
 
 ```
-packages/api/
+apps/api/
 ├── src/
 │   ├── controllers/    # API endpoint handlers
 │   ├── middlewares/    # Express middlewares

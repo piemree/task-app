@@ -10,31 +10,41 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { projectService } from "@/services/project-service";
+import { taskService } from "@/services/task-service";
 import type { ProjectResponse } from "@schemas/project.schema";
+import type { TaskResponse } from "@schemas/task.schema";
 import { CalendarDays, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export function ProjectDetail({ projectId }: { projectId: string }) {
 	const router = useRouter();
 	const [project, setProject] = useState<ProjectResponse | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [tasks, setTasks] = useState<TaskResponse[]>([]);
+
+	const fetchProject = useCallback(async () => {
+		setIsLoading(true);
+		try {
+			const project = await projectService.getProject(projectId);
+			setProject(project);
+		} catch (err) {
+			setError(err instanceof Error ? err.message : "Bir hata oluştu");
+		} finally {
+			setIsLoading(false);
+		}
+	}, [projectId]);
+
+	const fetchTasks = useCallback(async () => {
+		const tasks = await taskService.getTasks(projectId);
+		setTasks(tasks);
+	}, [projectId]);
 
 	useEffect(() => {
-		const fetchProject = async () => {
-			setIsLoading(true);
-			try {
-				const project = await projectService.getProject(projectId);
-				setProject(project);
-			} catch (err) {
-				setError(err instanceof Error ? err.message : "Bir hata oluştu");
-			} finally {
-				setIsLoading(false);
-			}
-		};
 		fetchProject();
-	}, [projectId]);
+		fetchTasks();
+	}, [fetchProject, fetchTasks]);
 
 	if (isLoading) {
 		return (
@@ -94,7 +104,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
 			<div className="flex items-center justify-between">
 				<h2 className="text-3xl font-bold tracking-tight">{project.name}</h2>
 				<div className="flex gap-2">
-					<NewTaskDialog projectId={project._id} />
+					<NewTaskDialog projectId={project._id} onSuccess={fetchTasks} />
 				</div>
 			</div>
 
@@ -131,7 +141,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
 					<TabsTrigger value="members">Üyeler</TabsTrigger>
 				</TabsList>
 				<TabsContent value="tasks" className="mt-4">
-					<TaskList projectId={project._id} />
+					<TaskList projectId={project._id} tasks={tasks} isLoading={isLoading} />
 				</TabsContent>
 				<TabsContent value="members" className="mt-4">
 					<ProjectMembers projectId={project._id} members={project.members} />

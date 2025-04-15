@@ -12,7 +12,8 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { useAppSelector } from "@/lib/redux/hooks";
 import { notificationService } from "@/services/notification-service";
-import type { NotificationResponse } from "@schemas/notification.schema";
+import { socketService } from "@/services/socket-service";
+import type { NotificationResponse, NotificationSocketSchema } from "@schemas/notification.schema";
 import { Bell } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -38,6 +39,34 @@ export function NotificationButton() {
 	}, [user]);
 
 	useEffect(() => {
+		if (user) {
+			socketService.init({
+				user,
+				token: localStorage.getItem("token"),
+				isLoading: false,
+				error: null,
+			});
+
+			const unsubscribe = socketService.onProjectNotification((socketData) => {
+				notificationService.getUnreadNotifications().then((unreadNotifications) => {
+					setNotifications(unreadNotifications);
+					setUnreadCount(unreadNotifications.length);
+				});
+
+				toast({
+					title: "Yeni Bildirim",
+					description: getNotificationDescriptionFromSocket(socketData),
+				});
+			});
+
+			return () => {
+				unsubscribe();
+				socketService.disconnect();
+			};
+		}
+	}, [user]);
+
+	useEffect(() => {
 		const refreshNotifications = async () => {
 			if (user && isOpen) {
 				setIsLoading(true);
@@ -54,6 +83,8 @@ export function NotificationButton() {
 	const markAsRead = async () => {
 		try {
 			await notificationService.markAsRead();
+			setUnreadCount(0);
+			setNotifications([]);
 		} catch (error) {
 			toast({
 				variant: "destructive",
@@ -79,6 +110,25 @@ export function NotificationButton() {
 				return `"${notification.task?.title}" görevinin önceliği değiştirildi.`;
 			default:
 				return `"${notification.project.name}" projesinde bir güncelleme var.`;
+		}
+	};
+
+	const getNotificationDescriptionFromSocket = (socketData: NotificationSocketSchema) => {
+		switch (socketData.action) {
+			case "created":
+				return "Yeni bir görev oluşturuldu.";
+			case "updated":
+				return "Bir görev güncellendi.";
+			case "assigned":
+				return "Bir projeye davet edildiniz.";
+			case "deleted":
+				return "Bir görev silindi.";
+			case "status_changed":
+				return "Bir görevin durumu değiştirildi.";
+			case "priority_changed":
+				return "Bir görevin önceliği değiştirildi.";
+			default:
+				return "Projede bir güncelleme var.";
 		}
 	};
 

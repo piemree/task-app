@@ -20,7 +20,7 @@ import type { TaskPriorityEnum, TaskResponse, TaskStatusEnum } from "@schemas/ta
 import parse from "html-react-parser";
 import { ArrowLeft, CalendarDays, CheckCircle, ChevronDown, Circle, Clock, Edit, Save, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { TiptapEditor } from "../tiptap-editor";
 import { AssignTaskDialog } from "./assign-task-dialog";
 
@@ -33,101 +33,94 @@ export function TaskDetail({ projectId, taskId }: { projectId: string; taskId: s
 	const [isEditing, setIsEditing] = useState(false);
 	const [editDescription, setEditDescription] = useState("");
 
-	useEffect(() => {
-		const fetchTask = async () => {
+	const fetchTask = useCallback(async () => {
+		setIsLoading(true);
+		try {
+			const task = await taskService.getTask(projectId, taskId);
+			setCurrentTask(task);
+			setEditDescription(task.description);
+		} catch (error) {
+			toast({
+				variant: "destructive",
+				title: "Görev yüklenemedi",
+				description: "Görev detayları yüklenirken bir hata oluştu.",
+			});
+		} finally {
+			setIsLoading(false);
+		}
+	}, [projectId, taskId]);
+
+	const fetchTaskLogs = useCallback(async () => {
+		const logs = await taskService.getTaskLogs(projectId, taskId);
+		setTaskLogs(logs);
+	}, [projectId, taskId]);
+
+	const handleStatusChange = useCallback(
+		async (status: TaskStatusEnum) => {
+			if (!currentTask) return;
+
 			setIsLoading(true);
 			try {
-				const task = await taskService.getTask(projectId, taskId);
-				setCurrentTask(task);
-				setEditDescription(task.description);
+				await taskService.changeStatus(projectId, taskId, status);
+				fetchTask();
+				fetchTaskLogs();
+				// toast({
+				// 	title: "Durum güncellendi",
+				// 	description: "Görev durumu başarıyla güncellendi.",
+				// });
 			} catch (error) {
 				toast({
 					variant: "destructive",
-					title: "Görev yüklenemedi",
-					description: "Görev detayları yüklenirken bir hata oluştu.",
+					title: "Durum güncellenemedi",
+					description: "Görev durumu güncellenirken bir hata oluştu.",
 				});
 			} finally {
 				setIsLoading(false);
 			}
-		};
+		},
+		[currentTask, projectId, taskId, fetchTask, fetchTaskLogs],
+	);
 
-		const fetchTaskLogs = async () => {
-			const logs = await taskService.getTaskLogs(projectId, taskId);
-			setTaskLogs(logs);
-		};
+	const handlePriorityChange = useCallback(
+		async (priority: TaskPriorityEnum) => {
+			if (!currentTask) return;
 
-		fetchTask();
-		fetchTaskLogs();
-	}, [projectId, taskId]);
+			setIsLoading(true);
+			try {
+				await taskService.changePriority(projectId, taskId, priority);
+				fetchTask();
+				fetchTaskLogs();
+				// toast({
+				// 	title: "Öncelik güncellendi",
+				// 	description: "Görev önceliği başarıyla güncellendi.",
+				// });
+			} catch (error) {
+				toast({
+					variant: "destructive",
+					title: "Öncelik güncellenemedi",
+					description: "Görev önceliği güncellenirken bir hata oluştu.",
+				});
+			} finally {
+				setIsLoading(false);
+			}
+		},
+		[currentTask, projectId, taskId, fetchTask, fetchTaskLogs],
+	);
 
-	const handleStatusChange = async (status: TaskStatusEnum) => {
+	const handleDescriptionSave = useCallback(async () => {
 		if (!currentTask) return;
 
 		setIsLoading(true);
 		try {
-			await taskService.changeStatus(projectId, taskId, status);
-			const task = await taskService.getTask(projectId, taskId);
-			const logs = await taskService.getTaskLogs(projectId, taskId);
-			setCurrentTask(task);
-			setTaskLogs(logs);
-			toast({
-				title: "Durum güncellendi",
-				description: "Görev durumu başarıyla güncellendi.",
-			});
-		} catch (error) {
-			toast({
-				variant: "destructive",
-				title: "Durum güncellenemedi",
-				description: "Görev durumu güncellenirken bir hata oluştu.",
-			});
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	const handlePriorityChange = async (priority: TaskPriorityEnum) => {
-		if (!currentTask) return;
-
-		setIsLoading(true);
-		try {
-			await taskService.changePriority(projectId, taskId, priority);
-			const task = await taskService.getTask(projectId, taskId);
-			const logs = await taskService.getTaskLogs(projectId, taskId);
-			setCurrentTask(task);
-			setTaskLogs(logs);
-			toast({
-				title: "Öncelik güncellendi",
-				description: "Görev önceliği başarıyla güncellendi.",
-			});
-		} catch (error) {
-			toast({
-				variant: "destructive",
-				title: "Öncelik güncellenemedi",
-				description: "Görev önceliği güncellenirken bir hata oluştu.",
-			});
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	const handleDescriptionSave = async () => {
-		if (!currentTask) return;
-
-		setIsLoading(true);
-		try {
-			const task = await taskService.updateTask(projectId, taskId, {
+			await taskService.updateTask(projectId, taskId, {
 				description: editDescription,
 			});
-			const logs = await taskService.getTaskLogs(projectId, taskId);
-
-			setCurrentTask(task);
-			setTaskLogs(logs);
-
+			fetchTask();
 			setIsEditing(false);
-			toast({
-				title: "Açıklama güncellendi",
-				description: "Görev açıklaması başarıyla güncellendi.",
-			});
+			// toast({
+			// 	title: "Açıklama güncellendi",
+			// 	description: "Görev açıklaması başarıyla güncellendi.",
+			// });
 		} catch (error) {
 			toast({
 				variant: "destructive",
@@ -137,14 +130,14 @@ export function TaskDetail({ projectId, taskId }: { projectId: string; taskId: s
 		} finally {
 			setIsLoading(false);
 		}
-	};
+	}, [currentTask, editDescription, projectId, taskId, fetchTask]);
 
-	const handleCancelEdit = () => {
+	const handleCancelEdit = useCallback(() => {
 		setIsEditing(false);
 		setEditDescription(currentTask?.description || "");
-	};
+	}, [currentTask]);
 
-	const getStatusIcon = (status: TaskStatusEnum) => {
+	const getStatusIcon = useCallback((status: TaskStatusEnum) => {
 		switch (status) {
 			case "completed":
 				return <CheckCircle className="h-5 w-5 text-green-500" />;
@@ -153,9 +146,9 @@ export function TaskDetail({ projectId, taskId }: { projectId: string; taskId: s
 			default:
 				return <Circle className="h-5 w-5 text-gray-500" />;
 		}
-	};
+	}, []);
 
-	const getPriorityBadge = (priority: TaskPriorityEnum) => {
+	const getPriorityBadge = useCallback((priority: TaskPriorityEnum) => {
 		switch (priority) {
 			case "high":
 				return (
@@ -176,7 +169,12 @@ export function TaskDetail({ projectId, taskId }: { projectId: string; taskId: s
 					</Badge>
 				);
 		}
-	};
+	}, []);
+
+	useEffect(() => {
+		fetchTask();
+		fetchTaskLogs();
+	}, [fetchTask, fetchTaskLogs]);
 
 	if (isLoading && !currentTask) {
 		return (
@@ -291,7 +289,14 @@ export function TaskDetail({ projectId, taskId }: { projectId: string; taskId: s
 									</span>
 								</div>
 							</div>
-							<AssignTaskDialog projectId={projectId} taskId={taskId} currentAssigneeId={currentTask.assignedTo._id} />
+							<AssignTaskDialog
+								projectId={projectId}
+								taskId={taskId}
+								currentAssigneeId={currentTask.assignedTo._id}
+								onSuccess={() => {
+									fetchTask();
+								}}
+							/>
 						</div>
 					</div>
 

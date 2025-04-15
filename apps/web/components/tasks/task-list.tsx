@@ -6,31 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { truncateHtml } from "@/lib/utils";
-import { taskService } from "@/services/task-service";
 import type { TaskPriorityEnum, TaskResponse, TaskStatusEnum } from "@schemas/task.schema";
 import { CalendarDays, CheckCircle, Circle, Clock } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 
-export function TaskList({ projectId }: { projectId: string }) {
+interface TaskListProps {
+	projectId: string;
+	tasks: TaskResponse[];
+	isLoading?: boolean;
+}
+
+export function TaskList({ projectId, tasks, isLoading }: TaskListProps) {
 	const router = useRouter();
-	const [tasks, setTasks] = useState<TaskResponse[]>([]);
-	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
-
-	useEffect(() => {
-		const fetchTasks = async () => {
-			try {
-				const tasks = await taskService.getTasks(projectId);
-				setTasks(tasks);
-			} catch (err) {
-				setError(err instanceof Error ? err.message : "Bir hata oluştu");
-			} finally {
-				setIsLoading(false);
-			}
-		};
-		fetchTasks();
-	}, [projectId]);
 
 	const handleTaskClick = (taskId: string) => {
 		router.push(`/dashboard/projects/${projectId}/tasks/${taskId}`);
@@ -79,7 +66,7 @@ export function TaskList({ projectId }: { projectId: string }) {
 		);
 	}
 
-	if (tasks.length === 0) {
+	if (tasks && tasks.length === 0) {
 		return (
 			<Card>
 				<CardHeader>

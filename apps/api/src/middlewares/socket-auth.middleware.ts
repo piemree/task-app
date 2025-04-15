@@ -6,7 +6,7 @@ import { TokenService } from "../services/token.service";
 const tokenService = new TokenService();
 
 export const socketAuthMiddleware = (socket: Socket, next: (err?: Error | undefined) => void) => {
-	const token = socket.handshake.query.token;
+	const token = socket.handshake.auth.token;
 
 	if (!token) {
 		return next(new Error("Socket authentication error"));

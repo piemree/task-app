@@ -32,9 +32,10 @@ type AssignTaskProps = {
 	projectId: string;
 	taskId: string;
 	currentAssigneeId: string;
+	onSuccess: () => void;
 };
 
-export function AssignTaskDialog({ projectId, taskId, currentAssigneeId }: AssignTaskProps) {
+export function AssignTaskDialog({ projectId, taskId, currentAssigneeId, onSuccess }: AssignTaskProps) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [members, setMembers] = useState<ProjectMember[]>([]);
@@ -70,17 +71,15 @@ export function AssignTaskDialog({ projectId, taskId, currentAssigneeId }: Assig
 		try {
 			await taskService.changeAssignee(projectId, taskId, values.userId);
 
-			toast({
-				title: "Görev atandı",
-				description: "Görev başarıyla yeni bir kullanıcıya atandı.",
-			});
+			// toast({
+			// 	title: "Görev atandı",
+			// 	description: "Görev başarıyla yeni bir kullanıcıya atandı.",
+			// });
 
 			// Dialog kapat ve formu sıfırla
 			setIsOpen(false);
 			form.reset();
-
-			// Sayfayı yenile
-			window.location.reload();
+			onSuccess();
 		} catch (error) {
 			toast({
 				variant: "destructive",

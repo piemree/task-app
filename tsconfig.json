@@ -12,6 +12,6 @@
 		"declarationMap": true,
 		"sourceMap": true
 	},
-	"references": [{ "path": "./packages/api" }, { "path": "./packages/frontend" }],
+	"references": [{ "path": "./apps/api" }, { "path": "./apps/web" }],
 	"files": []
 }

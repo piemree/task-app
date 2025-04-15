@@ -7,8 +7,6 @@ dotenv.config({ path: resolve(__dirname, ".env.test") });
 
 const TEST_DB_URL = process.env.DATABASE_URL || "mongodb://localhost:27017/task-app-test";
 
-console.log(TEST_DB_URL);
-
 beforeAll(async () => {
 	try {
 		await mongoose.connect(TEST_DB_URL);

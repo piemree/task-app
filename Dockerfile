@@ -13,15 +13,15 @@ COPY pnpm-lock.yaml ./
 COPY package.json ./
 
 # Copy the API package
-COPY packages/api/package.json ./packages/api/
-COPY packages/api/tsconfig.json ./packages/api/
-COPY packages/api/src ./packages/api/src
+COPY apps/api/package.json ./apps/api/
+COPY apps/api/tsconfig.json ./apps/api/
+COPY apps/api/src ./apps/api/src
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
 # Build the API application
-WORKDIR /app/packages/api
+WORKDIR /app/apps/api
 RUN pnpm build
 
 # Production stage
@@ -39,19 +39,19 @@ COPY pnpm-lock.yaml ./
 COPY package.json ./
 
 # Copy the API package
-COPY packages/api/package.json ./packages/api/
+COPY apps/api/package.json ./apps/api/
 
 # Install production dependencies only
 RUN pnpm install --prod --frozen-lockfile
 
 # Copy built application from builder stage
-COPY --from=builder /app/packages/api/dist ./packages/api/dist
+COPY --from=builder /app/apps/api/dist ./apps/api/dist
 
 # Copy environment files
-COPY packages/api/.env* ./packages/api/
+COPY apps/api/.env* ./apps/api/
 
 # Set working directory to API package
-WORKDIR /app/packages/api
+WORKDIR /app/apps/api
 
 # Expose the port the app runs on
 EXPOSE 5000

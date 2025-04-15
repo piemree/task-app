@@ -36,7 +36,7 @@ export class TaskService {
 			.populate<{ project: IProject }>({ path: "project" })
 			.populate<{ createdBy: IUser }>({ path: "createdBy", select: "-password" })
 			.populate<{ assignedTo: IUser }>({ path: "assignedTo", select: "-password" });
-		console.log(task);
+
 		if (!task) {
 			throw new AppError(errorMessages.TASK_NOT_FOUND, 404);
 		}
@@ -85,7 +85,6 @@ export class TaskService {
 				action: logActionEnumSchema.enum.created,
 				user: member.user.toString(),
 				isRead: false,
-				_id: task._id,
 			})),
 		});
 
