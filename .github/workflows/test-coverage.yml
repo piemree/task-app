@@ -12,6 +12,33 @@ jobs:
     defaults:
       run:
         working-directory: apps/api
+
+    services:
+      mongodb:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: mongodb://localhost:27017/task-app-test
+      PORT: 5000
+      JWT_AUTH_SECRET: test_jwt_auth_secret_key
+      JWT_AUTH_EXPIRES_IN: 1d
+      JWT_INVITE_SECRET: test_jwt_invite_secret_key
+      JWT_INVITE_EXPIRES_IN: 1d
+      FRONTEND_URL: http://localhost:3000
+      API_URL: http://localhost:5000
+      NODE_ENV: test
+      MAIL_HOST: localhost
+      MAIL_PORT: 1025
+      MAIL_USER: test@example.com
+      MAIL_PASS: test_password
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,6 +57,27 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+
+      - name: Create test environment file
+        run: |
+          cat > .env.test << EOL
+          DATABASE_URL=mongodb://localhost:27017/task-app-test
+          PORT=5000
+          JWT_AUTH_SECRET=test_jwt_auth_secret_key
+          JWT_AUTH_EXPIRES_IN=1d
+          JWT_INVITE_SECRET=test_jwt_invite_secret_key
+          JWT_INVITE_EXPIRES_IN=1d
+          FRONTEND_URL=http://localhost:3000
+          API_URL=http://localhost:5000
+          NODE_ENV=test
+          MAIL_HOST=localhost
+          MAIL_PORT=1025
+          MAIL_USER=test@example.com
+          MAIL_PASS=test_password
+          EOL
+
+          echo "Test environment file created:"
+          cat .env.test
 
       - name: Run tests
         run: pnpm test:coverage
