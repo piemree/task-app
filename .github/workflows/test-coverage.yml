@@ -1,12 +1,17 @@
-name: Run tests and upload coverage
+name: Run API tests and upload coverage
 
 on: 
   push
+    paths:
+      - 'apps/api/**'
 
 jobs:
   test:
-    name: Run tests and collect coverage
+    name: Run API tests and collect coverage
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,3 +32,4 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: piemree/task-app
+          directory: ./apps/api/coverage/
