@@ -1,5 +1,6 @@
 # Advanced Task Management and Workflow Application
 
+[![Deploy API to GHCR](https://github.com/piemree/task-app/actions/workflows/deploy-api.yml/badge.svg)](https://github.com/piemree/task-app/actions/workflows/deploy-api.yml)
 [![Test Coverage](https://codecov.io/gh/piemree/task-app/branch/main/graph/badge.svg)](https://codecov.io/gh/piemree/task-app)
 
 This project is a comprehensive workflow application for managing projects and tasks.
