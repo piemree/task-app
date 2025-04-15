@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Coverage directory
+coverage
+.nyc_output
+
 .env
 .env.dev
 # Editor directories and files
