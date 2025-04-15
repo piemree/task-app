@@ -7,7 +7,8 @@
 		"dev": "pnpm -r --parallel --aggregate-output dev",
 		"build": "pnpm -r --parallel build",
 		"start": "pnpm -r --parallel start",
-		"lint": "pnpm -r --parallel lint"
+		"lint": "pnpm -r --parallel lint",
+		"test": "pnpm -r --parallel test"
 	},
 	"keywords": [],
 	"author": "",

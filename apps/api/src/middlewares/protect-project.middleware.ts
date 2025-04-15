@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 import { AppError } from "../error/app-error";
 import { errorMessages } from "../error/error-messages";
 import { catchAsync } from "../handlers/async-error.handler";
@@ -10,7 +11,7 @@ export const protectProject = (roles?: ProjectRole[]) => {
 	return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 		// Kullanıcı bilgisini kontrol et (protect middleware'inden gelmiş olmalı)
 		if (!req.user) {
-			throw new AppError(errorMessages.AUTH_USER_NOT_FOUND, 401);
+			throw new AppError(errorMessages.AUTH_USER_NOT_FOUND, StatusCodes.UNAUTHORIZED);
 		}
 
 		const { projectId } = validateObject(req.params, projectIdSchema);
@@ -22,7 +23,7 @@ export const protectProject = (roles?: ProjectRole[]) => {
 		});
 
 		if (!memberRole) {
-			throw new AppError(errorMessages.AUTH_INSUFFICIENT_PERMISSIONS, 403);
+			throw new AppError(errorMessages.AUTH_INSUFFICIENT_PERMISSIONS, StatusCodes.FORBIDDEN);
 		}
 
 		req.user.projectRole = memberRole;

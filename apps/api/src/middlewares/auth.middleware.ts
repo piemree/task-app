@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 import { AppError } from "../error/app-error";
 import { errorMessages } from "../error/error-messages";
 import { catchAsync } from "../handlers/async-error.handler";
@@ -12,15 +13,13 @@ export const auth = catchAsync(async (req: Request, res: Response, next: NextFun
 	if (req.headers.authorization?.startsWith("Bearer")) {
 		// Token'ı ayıkla
 		token = req.headers.authorization?.split(" ")[1];
-
 		// Token'ı doğrula
 		const decoded = tokenService.verifyAuthToken(token);
-
 		req.user = decoded;
 		next();
 	}
 
 	if (!token) {
-		throw new AppError(errorMessages.AUTH_TOKEN_MISSING, 401);
+		throw new AppError(errorMessages.AUTH_TOKEN_MISSING, StatusCodes.UNAUTHORIZED);
 	}
 });

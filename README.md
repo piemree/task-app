@@ -1,5 +1,7 @@
 # Advanced Task Management and Workflow Application
 
+[![Test Coverage](https://codecov.io/gh/piemree/task-app/branch/main/graph/badge.svg)](https://codecov.io/gh/piemree/task-app)
+
 This project is a comprehensive workflow application for managing projects and tasks.
 
 ## Live Environment

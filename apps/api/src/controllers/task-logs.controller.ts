@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 import { catchAsync } from "../handlers/async-error.handler";
 import { getTaskLogsParamsSchema } from "../schemas/task-log.schema";
 import { TaskLogService } from "../services/task-log.service";
@@ -13,5 +14,5 @@ export const getTaskLogs = catchAsync(async (req: Request, res: Response) => {
 		taskId: validatedParams.taskId,
 		userId: req.user?._id || "",
 	});
-	res.status(200).json(taskLogs);
+	res.status(StatusCodes.OK).json(taskLogs);
 });

@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import express from "express";
 import PrettyError from "pretty-error";
 import swaggerUi from "swagger-ui-express";
+import config from "./config/config";
 import { globalErrorHandler } from "./handlers/global-error.handler";
 // Routes
 import { notFoundHandler } from "./handlers/not-found.handler";
@@ -25,8 +26,11 @@ Error.prepareStackTrace = (err, stack) => {
 	return prettyError.render(err);
 };
 
-// MongoDB Bağlantısı
-connectDB();
+// MongoDB Bağlantısı - test ortamında değilse bağlan
+if (config.nodeEnv !== "test") {
+	connectDB();
+}
+
 // Create Express app
 const app: express.Application = express();
 

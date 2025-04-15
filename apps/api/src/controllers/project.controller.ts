@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 import { catchAsync } from "../handlers/async-error.handler";
 import {
 	inviteTokenSchema,
@@ -19,7 +20,7 @@ export const createProject = catchAsync(async (req: Request, res: Response) => {
 		data: validatedRequest,
 		userId: req.user?._id || "",
 	});
-	res.status(201).json(result);
+	res.status(StatusCodes.CREATED).json(result);
 });
 
 export const updateProject = catchAsync(async (req: Request, res: Response) => {
@@ -39,12 +40,12 @@ export const getProject = catchAsync(async (req: Request, res: Response) => {
 		projectId: validatedParams.projectId,
 		userId: req.user?._id || "",
 	});
-	res.status(200).json(result);
+	res.status(StatusCodes.OK).json(result);
 });
 
 export const getProjects = catchAsync(async (req: Request, res: Response) => {
 	const result = await projectService.getProjects(req.user?._id || "");
-	res.status(200).json(result);
+	res.status(StatusCodes.OK).json(result);
 });
 
 export const inviteUser = catchAsync(async (req: Request, res: Response) => {
@@ -55,13 +56,13 @@ export const inviteUser = catchAsync(async (req: Request, res: Response) => {
 		email: validatedRequest.email,
 		role: validatedRequest.role,
 	});
-	res.status(200).json(result);
+	res.status(StatusCodes.OK).json(result);
 });
 
 export const acceptInvite = catchAsync(async (req: Request, res: Response) => {
 	const validatedRequest = validateObject(req.body, inviteTokenSchema);
 	const result = await projectService.acceptInvite(validatedRequest.inviteToken);
-	res.status(200).json(result);
+	res.status(StatusCodes.OK).json(result);
 });
 
 export const removeMember = catchAsync(async (req: Request, res: Response) => {
@@ -70,11 +71,11 @@ export const removeMember = catchAsync(async (req: Request, res: Response) => {
 		projectId: validatedParams.projectId,
 		userId: validatedParams.userId,
 	});
-	res.status(200).json(result);
+	res.status(StatusCodes.OK).json(result);
 });
 
 export const deleteProject = catchAsync(async (req: Request, res: Response) => {
 	const validatedParams = validateObject(req.params, projectIdSchema);
 	const result = await projectService.deleteProject(validatedParams.projectId);
-	res.status(200).json(result);
+	res.status(StatusCodes.OK).json(result);
 });

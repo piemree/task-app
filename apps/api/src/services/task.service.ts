@@ -1,3 +1,4 @@
+import { StatusCodes } from "http-status-codes";
 import { AppError } from "../error/app-error";
 import { errorMessages } from "../error/error-messages";
 import { type IProject, Project } from "../models/project.model";
@@ -32,13 +33,14 @@ export class TaskService {
 		if (args.projectId) {
 			Object.assign(query, { project: args.projectId });
 		}
+
 		const task = await Task.findOne(query)
 			.populate<{ project: IProject }>({ path: "project" })
 			.populate<{ createdBy: IUser }>({ path: "createdBy", select: "-password" })
 			.populate<{ assignedTo: IUser }>({ path: "assignedTo", select: "-password" });
 
 		if (!task) {
-			throw new AppError(errorMessages.TASK_NOT_FOUND, 404);
+			throw new AppError(errorMessages.TASK_NOT_FOUND, StatusCodes.NOT_FOUND);
 		}
 
 		return task;
@@ -203,11 +205,13 @@ export class TaskService {
 		success: boolean;
 	}> {
 		const task = await Task.findOne({ _id: args.taskId, project: args.projectId });
+
 		if (!task) {
 			throw new AppError(errorMessages.TASK_NOT_FOUND, 404);
 		}
 
 		const project = await Project.findById(args.projectId);
+
 		if (!project) {
 			throw new AppError(errorMessages.PROJECT_NOT_FOUND, 404);
 		}

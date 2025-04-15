@@ -8,16 +8,6 @@ import type { TaskLogInput, TaskLogResponse } from "../schemas/task-log.schema";
 
 export class TaskLogService {
 	async createTaskLog(args: { data: TaskLogInput }) {
-		const task = await Task.findById(args.data.task);
-		if (!task) {
-			throw new AppError(errorMessages.TASK_NOT_FOUND, 404);
-		}
-
-		const user = await User.findById(args.data.changedBy);
-		if (!user) {
-			throw new AppError(errorMessages.USER_NOT_FOUND, 404);
-		}
-
 		const taskLog = new TaskLog(args.data);
 
 		await taskLog.save();

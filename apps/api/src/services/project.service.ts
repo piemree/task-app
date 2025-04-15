@@ -1,3 +1,4 @@
+import { StatusCodes } from "http-status-codes";
 import config from "../config/config";
 import { AppError } from "../error/app-error";
 import { errorMessages } from "../error/error-messages";
@@ -70,7 +71,7 @@ export class ProjectService {
 	async createProject(args: { data: ProjectInput; userId: string }): Promise<ProjectResponse> {
 		const user = await User.findById(args.userId);
 		if (!user) {
-			throw new AppError(errorMessages.USER_NOT_FOUND, 404);
+			throw new AppError(errorMessages.UNAUTHORIZED, StatusCodes.UNAUTHORIZED);
 		}
 
 		const project = await Project.create({
@@ -83,7 +84,7 @@ export class ProjectService {
 		return this.findOneProject({ projectId: project._id });
 	}
 
-	async sendInvite(args: { projectId: string; email: string; role: ProjectRole }): Promise<{ success: boolean }> {
+	async sendInvite(args: { projectId: string; email: string; role: ProjectRole }): Promise<{ inviteToken: string }> {
 		const project = await Project.findById(args.projectId);
 		if (!project) {
 			throw new AppError(errorMessages.PROJECT_NOT_FOUND, 404);
@@ -108,7 +109,7 @@ Link: ${inviteLink}
 			`,
 		});
 
-		return { success: true };
+		return { inviteToken: token };
 	}
 
 	async acceptInvite(token: string): Promise<{ success: boolean; isUnRegistered: boolean }> {
@@ -211,7 +212,7 @@ Link: ${inviteLink}
 		const project = await Project.findOne(query);
 
 		if (!project) {
-			throw new AppError(errorMessages.PROJECT_NOT_FOUND, 404);
+			throw new AppError(errorMessages.PROJECT_NOT_FOUND, StatusCodes.NOT_FOUND);
 		}
 
 		const memberRole = project.members.find((member) => member.user.toString() === args.userId)?.role;

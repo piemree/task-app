@@ -7,9 +7,12 @@ export default defineConfig({
 		coverage: {
 			provider: "v8",
 			reporter: ["text", "json", "html"],
+			reportsDirectory: "./coverage",
+			enabled: true,
+			all: true,
 		},
 		include: ["**/*.test.ts"],
-		setupFiles: ["./vitest.setup.ts"],
+		setupFiles: ["./src/__test__/vitest.setup.ts"],
 	},
 	resolve: {
 		alias: {
