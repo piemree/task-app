@@ -17,7 +17,7 @@ You can access the live version of the application through these links:
 
 This project is configured as a monorepo using PNPM Workspace. It contains two main apps:
 
-- `apps/frontend`: Frontend application built with Next.js 15 (App Router)
+- `apps/web`: Frontend application built with Next.js 15 (App Router)
 - `apps/api`: REST API built with Express.js, TypeScript, and MongoDB
 
 The overall project structure is as follows:
@@ -27,15 +27,42 @@ The overall project structure is as follows:
 ├── apps/
 │   ├── api/                 # Backend API
 │   │   ├── src/             # Source code
+│   │   │   ├── controllers/ # API endpoint handlers
+│   │   │   ├── middlewares/ # Express middlewares
+│   │   │   ├── models/      # Mongoose database models
+│   │   │   ├── routes/      # API endpoint routes
+│   │   │   ├── services/    # Business logic services
+│   │   │   ├── schemas/     # Zod validation schemas
+│   │   │   ├── types/       # TypeScript type definitions
+│   │   │   ├── config/      # Application configuration
+│   │   │   ├── utils/       # Helper functions
+│   │   │   ├── error/       # Error management tools
+│   │   │   ├── handlers/    # Global handlers
+│   │   │   ├── openapi/     # API documentation configuration
+│   │   │   ├── app.ts       # Express application
+│   │   │   └── server.ts    # HTTP server
 │   │   ├── public/          # Public assets
 │   │   ├── tsconfig.json    # TypeScript configuration
 │   │   └── package.json     # Package dependencies
 │   │
-│   └── web/            # Frontend application
+│   └── web/                 # Frontend application
 │       ├── app/             # Next.js App Router pages
+│       │   ├── auth/        # Authentication pages
+│       │   ├── dashboard/   # Dashboard and project pages
+│       │   └── invite/      # Invite pages
 │       ├── components/      # React components
+│       │   ├── auth/        # Authentication components
+│       │   ├── dashboard/   # Dashboard components
+│       │   ├── projects/    # Project-related components
+│       │   ├── tasks/       # Task-related components
+│       │   ├── profile/     # User profile components
+│       │   ├── ui/          # UI components (shadcn/ui)
+│       │   └── invite/      # Invite-related components
+│       ├── hooks/           # Custom React hooks
 │       ├── lib/             # Utility functions and libraries
+│       │   └── redux/       # Redux store and slices
 │       ├── services/        # API services
+│       ├── styles/          # Style files
 │       ├── public/          # Static assets
 │       └── package.json     # Package dependencies
 │
@@ -56,6 +83,7 @@ The overall project structure is as follows:
 - **Styling**: Tailwind CSS
 - **Form Handling**: React Hook Form with Zod validation
 - **Authentication**: JWT-based authentication
+- **Socket.io Client**: Real-time communication
 
 ### API (Backend)
 
@@ -69,6 +97,7 @@ The overall project structure is as follows:
 - **Zod-OpenAPI**: API schema validation and documentation
 - **Swagger UI**: API documentation visualization
 - **Nodemailer**: Email sending functionality
+- **Vitest**: Testing framework
 
 ## Features
 
@@ -81,6 +110,7 @@ The overall project structure is as follows:
 - **Email Notifications**: Automatic email notifications for important events
 - **User Interface**: Clean and intuitive interface for managing projects and tasks
 - **Responsive Design**: Works on desktop and mobile devices
+- **Invitation System**: Inviting users to projects
 
 ## Development
 
@@ -100,7 +130,7 @@ pnpm install
 Create a `.env` file in the API directory and set the following variables:
 
 ```
-DATABASE_URL="mongodb://localhost:27017/uww-muhendislik"
+DATABASE_URL="mongodb://localhost:27017/task-app"
 PORT=5000
 JWT_AUTH_SECRET="jwt_auth_secret_key"
 JWT_AUTH_EXPIRES_IN=1d
@@ -122,38 +152,7 @@ MAIL_PASS="mail_pass"
 pnpm --filter @task-app/api dev
 
 # Run the Frontend
-pnpm --filter @task-app/frontend dev
-```
-
-### Frontend Structure
-
-```
-apps/web/
-├── app/                    # Next.js App Router pages
-│   ├── auth/               # Authentication pages
-│   ├── dashboard/          # Dashboard and project pages
-│   ├── layout.tsx          # Root layout
-│   └── page.tsx            # Home page
-├── components/             # React components
-│   ├── auth/               # Authentication components
-│   ├── dashboard/          # Dashboard components
-│   ├── projects/           # Project-related components
-│   ├── tasks/              # Task-related components
-│   ├── profile/            # User profile components
-│   ├── ui/                 # UI components (shadcn/ui)
-│   └── redux-provider.tsx  # Redux provider component
-├── lib/                    # Utility functions and libraries
-│   ├── redux/              # Redux store and slices
-│   │   ├── hooks.ts        # Redux hooks
-│   │   ├── store.ts        # Redux store configuration
-│   │   └── slices/         # Redux slices
-│   └── utils.ts            # Utility functions
-├── services/               # API services
-│   ├── auth-service.ts     # Authentication service
-│   ├── project-service.ts  # Project service
-│   ├── task-service.ts     # Task service
-│   └── notification-service.ts # Notification service
-└── public/                 # Static assets
+pnpm --filter @task-app/web dev
 ```
 
 ### Frontend Architecture
@@ -167,16 +166,36 @@ The frontend application follows a clean architecture pattern with the following
 
 #### Redux Architecture
 
-The application uses Redux Toolkit for state management with the following slices:
+The application uses Redux Toolkit for state management. The Redux structure is organized as follows:
 
-1. **authSlice**: Manages user authentication state, including login, registration, and profile information.
+```
+lib/redux/
+├── store.ts             # Redux store configuration
+├── hooks.ts             # Custom Redux hooks (useAppDispatch, useAppSelector)
+└── slices/              # Redux slices
+    └── authSlice.ts     # Authentication state management
+```
 
-Each slice follows a similar pattern:
-- State definition with TypeScript interfaces
+Currently, the application implements the **authSlice** for managing user authentication state, which includes:
+- User information
+- JWT token management
+- Loading states
+- Error handling
+
+The authSlice supports the following operations:
+- User login and token storage
+- User logout and token removal
+- Profile information retrieval
+- User information updates
+
+Each slice follows the Redux Toolkit pattern with:
+- TypeScript interfaces for type safety
 - Initial state configuration
-- Async thunks for API calls
-- Reducers for state updates
-- Extra reducers for handling async thunk states (pending, fulfilled, rejected)
+- Reducers for synchronous state updates
+- AsyncThunks for handling asynchronous API calls
+- ExtraReducers for handling async operation states (pending, fulfilled, rejected)
+
+Redux state is made available throughout the application using the Redux Provider component.
 
 #### Authentication Flow
 
@@ -197,26 +216,19 @@ When the API is running, API documentation created with Swagger UI can be access
 http://localhost:5000/docs
 ```
 
-### API Structure
+### API Testing
 
+The API application can be tested with Vitest:
+
+```bash
+# Run tests
+pnpm --filter @task-app/api test
+
+# Run tests with coverage report
+pnpm --filter @task-app/api test:coverage
 ```
-apps/api/
-├── src/
-│   ├── controllers/    # API endpoint handlers
-│   ├── middlewares/    # Express middlewares
-│   ├── models/         # Mongoose database models
-│   ├── routes/         # API endpoint routes
-│   ├── services/       # Business logic services
-│   ├── schemas/        # Zod validation schemas
-│   ├── types/          # TypeScript type definitions
-│   ├── config/         # Application configuration
-│   ├── utils/          # Helper functions
-│   ├── error/          # Error management tools
-│   ├── handlers/       # Global handlers
-│   ├── openapi/        # API documentation configuration
-│   ├── app.ts          # Express application
-│   └── server.ts       # HTTP server
-├── tsconfig.json       # TypeScript configuration
-└── package.json        # Package dependencies
-```
+
+## License
+
+MIT
 

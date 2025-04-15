@@ -2,8 +2,9 @@ name: Run API tests and upload coverage
 
 on:
   push:
-    branches:
-      - master
+    paths:
+      - "apps/api/**"
+      - ".github/workflows/test-coverage.yml"
 
 jobs:
   test:
