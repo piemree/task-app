@@ -1,9 +1,9 @@
 name: Run API tests and upload coverage
 
-on: 
-  push
+on:
+  push:
     paths:
-      - 'apps/api/**'
+      - "apps/api/**"
 
 jobs:
   test:
