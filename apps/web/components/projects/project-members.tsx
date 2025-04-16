@@ -1,10 +1,10 @@
 "use client";
 
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { toast } from "@/hooks/use-toast";
 import { useAppSelector } from "@/lib/redux/hooks";
 import { projectService } from "@/services/project-service";

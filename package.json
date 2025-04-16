@@ -8,7 +8,8 @@
 		"build": "pnpm -r --parallel build",
 		"start": "pnpm -r --parallel start",
 		"lint": "pnpm -r --parallel lint",
-		"test": "pnpm -r --parallel test"
+		"test": "pnpm -r --parallel test",
+		"format": "biome format --write"
 	},
 	"keywords": [],
 	"author": "",

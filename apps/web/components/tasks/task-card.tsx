@@ -1,8 +1,8 @@
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { formatDate, truncateHtml } from "@/lib/utils";
 import { taskService } from "@/services/task-service";
 import type { TaskPriorityEnum, TaskResponse, TaskStatusEnum } from "@schemas/task.schema";
