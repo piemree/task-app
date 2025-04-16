@@ -42,4 +42,9 @@ export const taskService = {
 		const response = await api.get<TaskLogResponse[]>(`/projects/${projectId}/tasks/${taskId}/logs`);
 		return response;
 	},
+
+	deleteTask: async (projectId: string, taskId: string) => {
+		const response = await api.delete<{ success: boolean }>(`/projects/${projectId}/tasks/${taskId}`);
+		return response;
+	},
 };

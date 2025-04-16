@@ -13,16 +13,16 @@ import * as z from "zod";
 
 const formSchema = z.object({
 	firstName: z.string().min(1, {
-		message: "Ad alanı zorunludur.",
+		message: "First name is required.",
 	}),
 	lastName: z.string().min(1, {
-		message: "Soyad alanı zorunludur.",
+		message: "Last name is required.",
 	}),
 	email: z.string().email({
-		message: "Geçerli bir e-posta adresi girin.",
+		message: "Enter a valid email address.",
 	}),
 	password: z.string().min(8, {
-		message: "Şifre en az 8 karakter olmalıdır.",
+		message: "Password must be at least 8 characters.",
 	}),
 });
 
@@ -41,13 +41,13 @@ export function RegisterForm() {
 		},
 	});
 
-	// Hata mesajını göster
+	// Show error message
 	useEffect(() => {
 		if (error) {
 			toast({
 				variant: "destructive",
-				title: "Kayıt başarısız",
-				description: error || "Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.",
+				title: "Registration failed",
+				description: error || "An error occurred during registration. Please try again.",
 			});
 		}
 	}, [error]);
@@ -56,20 +56,20 @@ export function RegisterForm() {
 		try {
 			await dispatch(register(values)).unwrap();
 
-			// Register işlemi başarılı olursa
+			// If registration is successful
 			toast({
-				title: "Kayıt başarılı",
-				description: "Hesabınız oluşturuldu. Otomatik giriş yapılıyor...",
+				title: "Registration successful",
+				description: "Your account has been created. Logging you in automatically...",
 			});
 
-			// Login işlemi için de unwrap kullanarak hata kontrolü yapıyoruz
+			// Using unwrap for login to handle errors
 			await dispatch(login(values)).unwrap();
 			router.push("/dashboard");
 		} catch (error) {
 			toast({
 				variant: "destructive",
-				title: "Kayıt başarısız",
-				description: error instanceof Error ? error.message : "Bir hata oluştu. Lütfen tekrar deneyin.",
+				title: "Registration failed",
+				description: error instanceof Error ? error.message : "An error occurred. Please try again.",
 			});
 		}
 	}
@@ -82,9 +82,9 @@ export function RegisterForm() {
 					name="firstName"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Ad</FormLabel>
+							<FormLabel>First Name</FormLabel>
 							<FormControl>
-								<Input placeholder="Örnek" {...field} />
+								<Input placeholder="John" {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -95,9 +95,9 @@ export function RegisterForm() {
 					name="lastName"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Soyad</FormLabel>
+							<FormLabel>Last Name</FormLabel>
 							<FormControl>
-								<Input placeholder="Kullanıcı" {...field} />
+								<Input placeholder="Doe" {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -108,9 +108,9 @@ export function RegisterForm() {
 					name="email"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>E-posta</FormLabel>
+							<FormLabel>Email</FormLabel>
 							<FormControl>
-								<Input placeholder="ornek@sirket.com" {...field} />
+								<Input placeholder="example@company.com" {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -121,7 +121,7 @@ export function RegisterForm() {
 					name="password"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Şifre</FormLabel>
+							<FormLabel>Password</FormLabel>
 							<FormControl>
 								<Input type="password" placeholder="********" {...field} />
 							</FormControl>
@@ -130,7 +130,7 @@ export function RegisterForm() {
 					)}
 				/>
 				<Button type="submit" className="w-full" disabled={isLoading}>
-					{isLoading ? "Kayıt yapılıyor..." : "Kayıt Ol"}
+					{isLoading ? "Registering..." : "Register"}
 				</Button>
 			</form>
 		</Form>

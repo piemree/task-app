@@ -1,7 +1,7 @@
 {
 	"name": "task-app",
 	"version": "1.0.0",
-	"description": "İleri Düzey Görev Yönetim ve İş Akışı Uygulaması",
+	"description": "Advanced Task Management and Workflow Application",
 	"private": true,
 	"scripts": {
 		"dev": "pnpm -r --parallel --aggregate-output dev",

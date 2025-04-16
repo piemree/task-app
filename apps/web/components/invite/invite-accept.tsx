@@ -22,21 +22,21 @@ export function InviteAcceptPage({ token, tokenPayload, inviteSuccess, needRegis
 		<div className="container flex items-center justify-center min-h-screen py-10">
 			<Card className="w-full max-w-md">
 				<CardHeader>
-					<CardTitle className="text-2xl">Proje Daveti</CardTitle>
-					<CardDescription>Bir proje ekibine katılmak için davet aldınız.</CardDescription>
+					<CardTitle className="text-2xl">Project Invitation</CardTitle>
+					<CardDescription>You have been invited to join a project team.</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					{inviteSuccess ? (
 						<div className="flex flex-col items-center justify-center py-6 space-y-4">
 							<CheckCircle className="w-16 h-16 text-green-500" />
 							<p className="text-center text-lg">
-								Davet başarıyla kabul edildi. Artık proje ekibinin bir parçasısınız.
+								Invitation accepted successfully. You are now part of the project team.
 							</p>
 						</div>
 					) : needRegister ? (
 						<div className="flex flex-col items-center justify-center py-6 space-y-4">
 							<UserPlus className="w-16 h-16 text-blue-500" />
-							<p className="text-center text-lg">Bu daveti kabul etmek için önce kayıt olmanız gerekmektedir.</p>
+							<p className="text-center text-lg">You need to register first to accept this invitation.</p>
 							<InviteRegisterForm token={token} tokenPayload={tokenPayload} />
 						</div>
 					) : null}
@@ -44,7 +44,7 @@ export function InviteAcceptPage({ token, tokenPayload, inviteSuccess, needRegis
 				{inviteSuccess && (
 					<CardFooter>
 						<Button className="w-full" onClick={() => router.push("/dashboard")}>
-							Dashboard'a Git
+							Go to Dashboard
 						</Button>
 					</CardFooter>
 				)}

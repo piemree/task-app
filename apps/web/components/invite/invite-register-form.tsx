@@ -16,16 +16,16 @@ import * as z from "zod";
 
 const registerFormSchema = z.object({
 	firstName: z.string().min(1, {
-		message: "Ad alanı zorunludur.",
+		message: "First name is required.",
 	}),
 	lastName: z.string().min(1, {
-		message: "Soyad alanı zorunludur.",
+		message: "Last name is required.",
 	}),
 	email: z.string().email({
-		message: "Geçerli bir e-posta adresi girin.",
+		message: "Enter a valid email address.",
 	}),
 	password: z.string().min(8, {
-		message: "Şifre en az 8 karakter olmalıdır.",
+		message: "Password must be at least 8 characters.",
 	}),
 });
 
@@ -52,13 +52,13 @@ export function InviteRegisterForm({ tokenPayload, token }: InviteRegisterFormPr
 		},
 	});
 
-	// Hata mesajını göster
+	// Show error message
 	useEffect(() => {
 		if (error) {
 			toast({
 				variant: "destructive",
-				title: "İşlem başarısız",
-				description: error || "Bir hata oluştu. Lütfen tekrar deneyin.",
+				title: "Operation failed",
+				description: error || "An error occurred. Please try again.",
 			});
 		}
 	}, [error]);
@@ -68,25 +68,25 @@ export function InviteRegisterForm({ tokenPayload, token }: InviteRegisterFormPr
 			// set loading to true
 			setIsLoading(true);
 
-			// Register işlemini yapalım ve sonucu bekleyelim
+			// Register and wait for the result
 			await dispatch(register(values)).unwrap();
 
-			// Davet kabul etme işlemini gerçekleştirelim
+			// Accept the invitation
 			await projectService.acceptInvite({ inviteToken: token });
 
-			// Giriş yapalım - unwrap ile hata kontrolü ekleyelim
+			// Login - add error handling with unwrap
 			await dispatch(login(form.getValues())).unwrap();
 
 			toast({
-				title: "İşlem başarılı",
-				description: "Davet başarıyla kabul edildi.",
+				title: "Operation successful",
+				description: "Invitation accepted successfully.",
 			});
 			router.push("/dashboard");
 		} catch (error) {
 			toast({
 				variant: "destructive",
-				title: "İşlem başarısız",
-				description: error instanceof Error ? error.message : "Bir hata oluştu. Lütfen tekrar deneyin.",
+				title: "Operation failed",
+				description: error instanceof Error ? error.message : "An error occurred. Please try again.",
 			});
 		} finally {
 			setIsLoading(false);
@@ -98,7 +98,7 @@ export function InviteRegisterForm({ tokenPayload, token }: InviteRegisterFormPr
 			<form onSubmit={form.handleSubmit(onRegisterSubmit)} className="space-y-4 w-full">
 				<div className="mb-4">
 					<p className="text-sm text-muted-foreground mb-2">
-						Proje rolünüz: <span className="font-medium text-primary">{tokenPayload.role}</span>
+						Your project role: <span className="font-medium text-primary">{tokenPayload.role}</span>
 					</p>
 				</div>
 				<FormField
@@ -106,9 +106,9 @@ export function InviteRegisterForm({ tokenPayload, token }: InviteRegisterFormPr
 					name="firstName"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Ad</FormLabel>
+							<FormLabel>First Name</FormLabel>
 							<FormControl>
-								<Input className="h-10" placeholder="Örnek" {...field} />
+								<Input className="h-10" placeholder="John" {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -119,9 +119,9 @@ export function InviteRegisterForm({ tokenPayload, token }: InviteRegisterFormPr
 					name="lastName"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Soyad</FormLabel>
+							<FormLabel>Last Name</FormLabel>
 							<FormControl>
-								<Input className="h-10" placeholder="Kullanıcı" {...field} />
+								<Input className="h-10" placeholder="Doe" {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -132,9 +132,9 @@ export function InviteRegisterForm({ tokenPayload, token }: InviteRegisterFormPr
 					name="email"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>E-posta</FormLabel>
+							<FormLabel>Email</FormLabel>
 							<FormControl>
-								<Input className="h-10" placeholder="ornek@sirket.com" disabled {...field} />
+								<Input className="h-10" placeholder="example@company.com" disabled {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -145,7 +145,7 @@ export function InviteRegisterForm({ tokenPayload, token }: InviteRegisterFormPr
 					name="password"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Şifre</FormLabel>
+							<FormLabel>Password</FormLabel>
 							<FormControl>
 								<Input className="h-10" type="password" placeholder="********" {...field} />
 							</FormControl>
@@ -154,7 +154,7 @@ export function InviteRegisterForm({ tokenPayload, token }: InviteRegisterFormPr
 					)}
 				/>
 				<Button type="submit" className="w-full h-10 mt-2" disabled={isLoading}>
-					{isLoading ? "Kayıt yapılıyor..." : "Kayıt Ol ve Daveti Kabul Et"}
+					{isLoading ? "Registering..." : "Register and Accept Invitation"}
 				</Button>
 			</form>
 		</Form>

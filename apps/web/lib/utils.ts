@@ -1,9 +1,14 @@
 import { type ClassValue, clsx } from "clsx";
+import { format } from "date-fns";
 import { convert } from "html-to-text";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
+}
+
+export function formatDate(date: string | Date, options?: { ignoreTime?: boolean }) {
+	return format(new Date(date), options?.ignoreTime ? "dd MMM yyyy" : "dd MMM yyyy HH:mm");
 }
 
 export function truncateHtml(htmlContent: string, maxLength = 100) {

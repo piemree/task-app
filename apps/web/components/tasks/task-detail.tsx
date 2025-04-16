@@ -14,11 +14,13 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
+import { formatDate } from "@/lib/utils";
 import { taskService } from "@/services/task-service";
 import type { TaskLogResponse } from "@schemas/task-log.schema";
 import type { TaskPriorityEnum, TaskResponse, TaskStatusEnum } from "@schemas/task.schema";
 import parse from "html-react-parser";
 import { ArrowLeft, CalendarDays, CheckCircle, ChevronDown, Circle, Clock, Edit, Save, X } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { TiptapEditor } from "../tiptap-editor";
@@ -32,13 +34,13 @@ type TaskDetailProps = {
 };
 
 export function TaskDetail({ projectId, taskId, initialTask, initialTaskLogs }: TaskDetailProps) {
-	const router = useRouter();
 	const [currentTask, setCurrentTask] = useState<TaskResponse | null>(initialTask || null);
 	const [taskLogs, setTaskLogs] = useState<TaskLogResponse[]>(initialTaskLogs || []);
 	const [activeTab, setActiveTab] = useState("task");
 	const [isLoading, setIsLoading] = useState(false);
 	const [isEditing, setIsEditing] = useState(false);
 	const [editDescription, setEditDescription] = useState("");
+	const router = useRouter();
 
 	const fetchTask = useCallback(async () => {
 		setIsLoading(true);
@@ -49,8 +51,8 @@ export function TaskDetail({ projectId, taskId, initialTask, initialTaskLogs }: 
 		} catch (error) {
 			toast({
 				variant: "destructive",
-				title: "Görev yüklenemedi",
-				description: "Görev detayları yüklenirken bir hata oluştu.",
+				title: "Task could not be loaded",
+				description: "An error occurred while loading task details.",
 			});
 		} finally {
 			setIsLoading(false);
@@ -71,6 +73,7 @@ export function TaskDetail({ projectId, taskId, initialTask, initialTaskLogs }: 
 				await taskService.changeStatus(projectId, taskId, status);
 				fetchTask();
 				fetchTaskLogs();
+				router.refresh();
 				// toast({
 				// 	title: "Durum güncellendi",
 				// 	description: "Görev durumu başarıyla güncellendi.",
@@ -78,14 +81,14 @@ export function TaskDetail({ projectId, taskId, initialTask, initialTaskLogs }: 
 			} catch (error) {
 				toast({
 					variant: "destructive",
-					title: "Durum güncellenemedi",
-					description: "Görev durumu güncellenirken bir hata oluştu.",
+					title: "Status could not be updated",
+					description: "An error occurred while updating the task status.",
 				});
 			} finally {
 				setIsLoading(false);
 			}
 		},
-		[currentTask, projectId, taskId, fetchTask, fetchTaskLogs],
+		[currentTask, projectId, taskId, fetchTask, fetchTaskLogs, router],
 	);
 
 	const handlePriorityChange = useCallback(
@@ -97,6 +100,7 @@ export function TaskDetail({ projectId, taskId, initialTask, initialTaskLogs }: 
 				await taskService.changePriority(projectId, taskId, priority);
 				fetchTask();
 				fetchTaskLogs();
+				router.refresh();
 				// toast({
 				// 	title: "Öncelik güncellendi",
 				// 	description: "Görev önceliği başarıyla güncellendi.",
@@ -104,14 +108,14 @@ export function TaskDetail({ projectId, taskId, initialTask, initialTaskLogs }: 
 			} catch (error) {
 				toast({
 					variant: "destructive",
-					title: "Öncelik güncellenemedi",
-					description: "Görev önceliği güncellenirken bir hata oluştu.",
+					title: "Priority could not be updated",
+					description: "An error occurred while updating the task priority.",
 				});
 			} finally {
 				setIsLoading(false);
 			}
 		},
-		[currentTask, projectId, taskId, fetchTask, fetchTaskLogs],
+		[currentTask, projectId, taskId, fetchTask, fetchTaskLogs, router],
 	);
 
 	const handleDescriptionSave = useCallback(async () => {
@@ -124,6 +128,7 @@ export function TaskDetail({ projectId, taskId, initialTask, initialTaskLogs }: 
 			});
 			fetchTask();
 			setIsEditing(false);
+			router.refresh();
 			// toast({
 			// 	title: "Açıklama güncellendi",
 			// 	description: "Görev açıklaması başarıyla güncellendi.",
@@ -131,13 +136,13 @@ export function TaskDetail({ projectId, taskId, initialTask, initialTaskLogs }: 
 		} catch (error) {
 			toast({
 				variant: "destructive",
-				title: "Açıklama güncellenemedi",
-				description: "Görev açıklaması güncellenirken bir hata oluştu.",
+				title: "Description could not be updated",
+				description: "An error occurred while updating the task description.",
 			});
 		} finally {
 			setIsLoading(false);
 		}
-	}, [currentTask, editDescription, projectId, taskId, fetchTask]);
+	}, [currentTask, editDescription, projectId, taskId, fetchTask, router]);
 
 	const handleCancelEdit = useCallback(() => {
 		setIsEditing(false);
@@ -160,19 +165,19 @@ export function TaskDetail({ projectId, taskId, initialTask, initialTaskLogs }: 
 			case "high":
 				return (
 					<Badge variant="destructive" className="bg-red-500 text-white">
-						Yüksek
+						High
 					</Badge>
 				);
 			case "medium":
 				return (
 					<Badge variant="secondary" className="bg-amber-500 text-white">
-						Orta
+						Medium
 					</Badge>
 				);
 			default:
 				return (
 					<Badge variant="outline" className="bg-gray-500 text-white">
-						Düşük
+						Low
 					</Badge>
 				);
 		}
@@ -204,11 +209,13 @@ export function TaskDetail({ projectId, taskId, initialTask, initialTaskLogs }: 
 	if (!currentTask) {
 		return (
 			<div className="flex flex-col items-center justify-center py-12">
-				<h2 className="text-xl font-semibold">Görev bulunamadı</h2>
-				<p className="text-muted-foreground mt-2">İstediğiniz görev bulunamadı veya erişim izniniz yok.</p>
-				<Button variant="outline" className="mt-4" onClick={() => router.push(`/dashboard/projects/${projectId}`)}>
-					Projeye Dön
-				</Button>
+				<h2 className="text-xl font-semibold">Task not found</h2>
+				<p className="text-muted-foreground mt-2">The requested task could not be found or you don't have access.</p>
+				<Link href={`/dashboard/projects/${projectId}`} passHref>
+					<Button variant="outline" className="mt-4">
+						Return to Project
+					</Button>
+				</Link>
 			</div>
 		);
 	}
@@ -216,10 +223,12 @@ export function TaskDetail({ projectId, taskId, initialTask, initialTaskLogs }: 
 	return (
 		<div className="space-y-6">
 			<div className="flex items-center gap-2">
-				<Button variant="ghost" size="icon" onClick={() => router.push(`/dashboard/projects/${projectId}`)}>
-					<ArrowLeft className="h-4 w-4" />
-					<span className="sr-only">Geri</span>
-				</Button>
+				<Link href={`/dashboard/projects/${projectId}`} passHref>
+					<Button variant="ghost" size="icon">
+						<ArrowLeft className="h-4 w-4" />
+						<span className="sr-only">Back</span>
+					</Button>
+				</Link>
 				<h2 className="text-3xl font-bold tracking-tight">{currentTask.title}</h2>
 			</div>
 
@@ -228,30 +237,30 @@ export function TaskDetail({ projectId, taskId, initialTask, initialTaskLogs }: 
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-2">
 							{getStatusIcon(currentTask.status)}
-							<CardTitle>Görev Detayları</CardTitle>
+							<CardTitle>Task Details</CardTitle>
 						</div>
 						<div className="flex items-center gap-2">
-							<span className="text-sm text-muted-foreground">Öncelik:</span>
+							<span className="text-sm text-muted-foreground">Priority:</span>
 							{getPriorityBadge(currentTask.priority)}
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
 									<Button variant="ghost" size="sm" className="ml-2 h-8 w-8 p-0">
-										<span className="sr-only">Önceliği Değiştir</span>
+										<span className="sr-only">Change Priority</span>
 										<ChevronDown className="h-4 w-4" />
 									</Button>
 								</DropdownMenuTrigger>
 								<DropdownMenuContent align="end">
 									<DropdownMenuItem onClick={() => handlePriorityChange("low")}>
 										<div className="mr-2 h-3 w-3 rounded-full bg-gray-400" />
-										<span>Düşük</span>
+										<span>Low</span>
 									</DropdownMenuItem>
 									<DropdownMenuItem onClick={() => handlePriorityChange("medium")}>
 										<div className="mr-2 h-3 w-3 rounded-full bg-amber-500" />
-										<span>Orta</span>
+										<span>Medium</span>
 									</DropdownMenuItem>
 									<DropdownMenuItem onClick={() => handlePriorityChange("high")}>
 										<div className="mr-2 h-3 w-3 rounded-full bg-red-500" />
-										<span>Yüksek</span>
+										<span>High</span>
 									</DropdownMenuItem>
 								</DropdownMenuContent>
 							</DropdownMenu>
@@ -262,10 +271,10 @@ export function TaskDetail({ projectId, taskId, initialTask, initialTaskLogs }: 
 					<div className="flex flex-col gap-4">
 						<div className="flex items-center text-sm">
 							<CalendarDays className="mr-2 h-4 w-4 text-muted-foreground" />
-							<span>{new Date(currentTask.createdAt).toLocaleDateString("tr-TR")}</span>
+							<span>{formatDate(currentTask.createdAt)}</span>
 						</div>
 						<div className="flex items-center gap-2">
-							<span className="text-sm text-muted-foreground">Oluşturan:</span>
+							<span className="text-sm text-muted-foreground">Created by:</span>
 							<div className="flex items-center gap-2">
 								<Avatar className="h-6 w-6">
 									<AvatarFallback className="text-xs">
@@ -279,7 +288,7 @@ export function TaskDetail({ projectId, taskId, initialTask, initialTaskLogs }: 
 						</div>
 						<div className="flex items-center justify-between">
 							<div className="flex items-center gap-2">
-								<span className="text-sm text-muted-foreground">Atanan:</span>
+								<span className="text-sm text-muted-foreground">Assigned to:</span>
 								<div className="flex items-center gap-2">
 									<Avatar className="h-6 w-6">
 										<AvatarFallback className="text-xs">
@@ -297,34 +306,35 @@ export function TaskDetail({ projectId, taskId, initialTask, initialTaskLogs }: 
 								currentAssigneeId={currentTask.assignedTo._id}
 								onSuccess={() => {
 									fetchTask();
+									router.refresh();
 								}}
 							/>
 						</div>
 					</div>
 
 					<div className="mt-6">
-						<h3 className="text-sm font-medium mb-2">Durumu Güncelle</h3>
+						<h3 className="text-sm font-medium mb-2">Update Status</h3>
 						<div className="flex gap-2">
 							<Button
 								variant={currentTask.status === "pending" ? "default" : "outline"}
 								size="sm"
 								onClick={() => handleStatusChange("pending")}
 							>
-								Beklemede
+								Pending
 							</Button>
 							<Button
 								variant={currentTask.status === "in_progress" ? "default" : "outline"}
 								size="sm"
 								onClick={() => handleStatusChange("in_progress")}
 							>
-								Devam Ediyor
+								In Progress
 							</Button>
 							<Button
 								variant={currentTask.status === "completed" ? "default" : "outline"}
 								size="sm"
 								onClick={() => handleStatusChange("completed")}
 							>
-								Tamamlandı
+								Completed
 							</Button>
 						</div>
 					</div>
@@ -333,18 +343,18 @@ export function TaskDetail({ projectId, taskId, initialTask, initialTaskLogs }: 
 
 			<Tabs defaultValue="task" onValueChange={setActiveTab} value={activeTab}>
 				<TabsList>
-					<TabsTrigger value="task">Görev</TabsTrigger>
-					<TabsTrigger value="logs">Görev Günlükleri</TabsTrigger>
+					<TabsTrigger value="task">Task</TabsTrigger>
+					<TabsTrigger value="logs">Task Logs</TabsTrigger>
 				</TabsList>
 				<TabsContent value="task" className="mt-4">
 					<Card>
 						<CardHeader className="pb-2">
 							<div className="flex justify-between items-center">
-								<CardTitle className="text-lg">Açıklama</CardTitle>
+								<CardTitle className="text-lg">Description</CardTitle>
 								{!isEditing && (
 									<Button variant="ghost" size="sm" onClick={() => setIsEditing(true)} className="h-8 w-8 p-0">
 										<Edit className="h-4 w-4" />
-										<span className="sr-only">Düzenle</span>
+										<span className="sr-only">Edit</span>
 									</Button>
 								)}
 							</div>
@@ -355,17 +365,17 @@ export function TaskDetail({ projectId, taskId, initialTask, initialTaskLogs }: 
 									<TiptapEditor
 										value={editDescription}
 										onChange={setEditDescription}
-										placeholder="Görev açıklaması..."
+										placeholder="Task description..."
 										acceptHeading={true}
 									/>
 									<div className="flex justify-end gap-2">
 										<Button size="sm" variant="outline" onClick={handleCancelEdit} disabled={isLoading}>
 											<X className="mr-2 h-4 w-4" />
-											İptal
+											Cancel
 										</Button>
 										<Button size="sm" onClick={handleDescriptionSave} disabled={isLoading}>
 											<Save className="mr-2 h-4 w-4" />
-											Kaydet
+											Save
 										</Button>
 									</div>
 								</div>

@@ -23,10 +23,10 @@ import * as z from "zod";
 
 const formSchema = z.object({
 	email: z.string().email({
-		message: "Geçerli bir e-posta adresi giriniz.",
+		message: "Please enter a valid email address.",
 	}),
 	role: z.enum(["admin", "manager", "developer"], {
-		required_error: "Rol seçiniz.",
+		required_error: "Please select a role.",
 	}),
 });
 
@@ -48,16 +48,16 @@ export function InviteMemberDialog({ projectId }: { projectId: string }) {
 			await projectService.inviteUser(projectId, values);
 
 			toast({
-				title: "Davet gönderildi",
-				description: "Kullanıcı projeye başarıyla davet edildi.",
+				title: "Invitation sent",
+				description: "User has been successfully invited to the project.",
 			});
 			setIsOpen(false);
 			form.reset();
 		} catch (error) {
 			toast({
 				variant: "destructive",
-				title: "Davet gönderilemedi",
-				description: "Kullanıcı davet edilirken bir hata oluştu. Lütfen tekrar deneyin.",
+				title: "Invitation could not be sent",
+				description: "An error occurred while inviting the user. Please try again.",
 			});
 		} finally {
 			setIsLoading(false);
@@ -69,13 +69,13 @@ export function InviteMemberDialog({ projectId }: { projectId: string }) {
 			<DialogTrigger asChild>
 				<Button size="sm">
 					<UserPlus className="mr-2 h-4 w-4" />
-					Üye Davet Et
+					Invite Member
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[500px]">
 				<DialogHeader>
-					<DialogTitle>Üye Davet Et</DialogTitle>
-					<DialogDescription>Projeye yeni bir üye davet edin.</DialogDescription>
+					<DialogTitle>Invite Member</DialogTitle>
+					<DialogDescription>Invite a new member to the project.</DialogDescription>
 				</DialogHeader>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -84,7 +84,7 @@ export function InviteMemberDialog({ projectId }: { projectId: string }) {
 							name="email"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>E-posta Adresi</FormLabel>
+									<FormLabel>Email Address</FormLabel>
 									<FormControl>
 										<Input placeholder="ornek@mail.com" type="email" {...field} />
 									</FormControl>
@@ -97,17 +97,17 @@ export function InviteMemberDialog({ projectId }: { projectId: string }) {
 							name="role"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Rol</FormLabel>
+									<FormLabel>Role</FormLabel>
 									<Select onValueChange={field.onChange} defaultValue={field.value}>
 										<FormControl>
 											<SelectTrigger>
-												<SelectValue placeholder="Rol seçin" />
+												<SelectValue placeholder="Select a role" />
 											</SelectTrigger>
 										</FormControl>
 										<SelectContent>
 											<SelectItem value="admin">Admin</SelectItem>
-											<SelectItem value="manager">Yönetici</SelectItem>
-											<SelectItem value="developer">Geliştirici</SelectItem>
+											<SelectItem value="manager">Manager</SelectItem>
+											<SelectItem value="developer">Developer</SelectItem>
 										</SelectContent>
 									</Select>
 									<FormMessage />
@@ -116,10 +116,10 @@ export function InviteMemberDialog({ projectId }: { projectId: string }) {
 						/>
 						<DialogFooter>
 							<Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
-								İptal
+								Cancel
 							</Button>
 							<Button type="submit" disabled={isLoading}>
-								{isLoading ? "Davet Gönderiliyor..." : "Davet Gönder"}
+								{isLoading ? "Sending Invitation..." : "Send Invitation"}
 							</Button>
 						</DialogFooter>
 					</form>

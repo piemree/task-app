@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import type React from "react";
-import "./globals.css";
+import "../styles/globals.css";
 import { ReduxProvider } from "@/components/redux-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
@@ -9,9 +9,8 @@ import { Toaster } from "@/components/ui/toaster";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-	title: "Proje Yönetimi",
-	description: "Proje ve görev yönetimi uygulaması",
-	generator: "v0.dev",
+	title: "Project Management",
+	description: "Project and task management application",
 };
 
 export default function RootLayout({
@@ -20,7 +19,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="tr" suppressHydrationWarning>
+		<html lang="en" suppressHydrationWarning>
 			<body className={inter.className}>
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
 					<ReduxProvider>
@@ -32,5 +31,3 @@ export default function RootLayout({
 		</html>
 	);
 }
-
-import "./globals.css";

@@ -18,13 +18,14 @@ import { taskService } from "@/services/task-service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { ProjectMember } from "@schemas/project.schema";
 import { UserPlus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 const formSchema = z.object({
 	userId: z.string({
-		required_error: "Lütfen bir kullanıcı seçin",
+		required_error: "Please select a user",
 	}),
 });
 
@@ -39,6 +40,7 @@ export function AssignTaskDialog({ projectId, taskId, currentAssigneeId, onSucce
 	const [isOpen, setIsOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [members, setMembers] = useState<ProjectMember[]>([]);
+	const router = useRouter();
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -55,8 +57,8 @@ export function AssignTaskDialog({ projectId, taskId, currentAssigneeId, onSucce
 			} catch (error) {
 				toast({
 					variant: "destructive",
-					title: "Proje üyeleri yüklenemedi",
-					description: "Proje üyeleri yüklenirken bir hata oluştu.",
+					title: "Project members could not be loaded",
+					description: "An error occurred while loading project members.",
 				});
 			}
 		};
@@ -80,11 +82,12 @@ export function AssignTaskDialog({ projectId, taskId, currentAssigneeId, onSucce
 			setIsOpen(false);
 			form.reset();
 			onSuccess();
+			router.refresh();
 		} catch (error) {
 			toast({
 				variant: "destructive",
-				title: "Görev atanamadı",
-				description: "Görev atanırken bir hata oluştu. Lütfen tekrar deneyin.",
+				title: "Task could not be assigned",
+				description: "An error occurred while assigning the task. Please try again.",
 			});
 		} finally {
 			setIsLoading(false);
@@ -96,13 +99,13 @@ export function AssignTaskDialog({ projectId, taskId, currentAssigneeId, onSucce
 			<DialogTrigger asChild>
 				<Button size="sm" variant="ghost">
 					<UserPlus className="h-4 w-4 mr-1" />
-					Görev Ata
+					Assign Task
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[500px]">
 				<DialogHeader>
-					<DialogTitle>Görevi Ata</DialogTitle>
-					<DialogDescription>Bu görevi başka bir ekip üyesine atayın.</DialogDescription>
+					<DialogTitle>Assign Task</DialogTitle>
+					<DialogDescription>Assign this task to another team member.</DialogDescription>
 				</DialogHeader>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -111,11 +114,11 @@ export function AssignTaskDialog({ projectId, taskId, currentAssigneeId, onSucce
 							name="userId"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Kullanıcı</FormLabel>
+									<FormLabel>User</FormLabel>
 									<Select onValueChange={field.onChange} defaultValue={field.value}>
 										<FormControl>
 											<SelectTrigger>
-												<SelectValue placeholder="Bir kullanıcı seçin" />
+												<SelectValue placeholder="Select a user" />
 											</SelectTrigger>
 										</FormControl>
 										<SelectContent>
@@ -134,10 +137,10 @@ export function AssignTaskDialog({ projectId, taskId, currentAssigneeId, onSucce
 						/>
 						<DialogFooter>
 							<Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
-								İptal
+								Cancel
 							</Button>
 							<Button type="submit" disabled={isLoading}>
-								{isLoading ? "Atanıyor..." : "Görev Ata"}
+								{isLoading ? "Assigning..." : "Assign Task"}
 							</Button>
 						</DialogFooter>
 					</form>

@@ -13,10 +13,10 @@ import * as z from "zod";
 
 const formSchema = z.object({
 	email: z.string().email({
-		message: "Geçerli bir e-posta adresi girin.",
+		message: "Enter a valid email address.",
 	}),
 	password: z.string().min(8, {
-		message: "Şifre en az 8 karakter olmalıdır.",
+		message: "Password must be at least 8 characters.",
 	}),
 });
 
@@ -33,20 +33,20 @@ export function LoginForm() {
 		},
 	});
 
-	// Kullanıcı başarıyla giriş yaptığında dashboard'a yönlendir
+	// Redirect to dashboard when user successfully logs in
 	useEffect(() => {
 		if (token) {
 			router.push("/dashboard");
 		}
 	}, [token, router]);
 
-	// Hata mesajı göster
+	// Show error message
 	useEffect(() => {
 		if (error) {
 			toast({
 				variant: "destructive",
-				title: "Giriş başarısız",
-				description: error || "E-posta veya şifre hatalı.",
+				title: "Login failed",
+				description: error || "Email or password is incorrect.",
 			});
 		}
 	}, [error]);
@@ -63,9 +63,9 @@ export function LoginForm() {
 					name="email"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>E-posta</FormLabel>
+							<FormLabel>Email</FormLabel>
 							<FormControl>
-								<Input placeholder="ornek@sirket.com" {...field} />
+								<Input placeholder="example@company.com" {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -76,7 +76,7 @@ export function LoginForm() {
 					name="password"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Şifre</FormLabel>
+							<FormLabel>Password</FormLabel>
 							<FormControl>
 								<Input type="password" placeholder="********" {...field} />
 							</FormControl>
@@ -85,7 +85,7 @@ export function LoginForm() {
 					)}
 				/>
 				<Button type="submit" className="w-full" disabled={isLoading}>
-					{isLoading ? "Giriş yapılıyor..." : "Giriş Yap"}
+					{isLoading ? "Logging in..." : "Login"}
 				</Button>
 			</form>
 		</Form>

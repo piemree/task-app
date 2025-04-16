@@ -3,8 +3,8 @@ import { taskService } from "@/services/task-service";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-	title: "Görev Detayı",
-	description: "Görev detayları ve günlükler",
+	title: "Task Details",
+	description: "Task details and logs",
 };
 
 const fetchInitialData = async (projectId: string, taskId: string) => {

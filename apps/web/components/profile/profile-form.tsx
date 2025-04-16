@@ -13,15 +13,15 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 const formSchema = z.object({
 	firstName: z.string().min(1, {
-		message: "Ad alanı zorunludur.",
+		message: "First name is required.",
 	}),
 	lastName: z.string().min(1, {
-		message: "Soyad alanı zorunludur.",
+		message: "Last name is required.",
 	}),
 	email: z
 		.string()
 		.email({
-			message: "Geçerli bir e-posta adresi girin.",
+			message: "Enter a valid email address.",
 		})
 		.readonly(),
 });
@@ -67,14 +67,14 @@ export function ProfileForm() {
 			);
 
 			toast({
-				title: "Profil güncellendi",
-				description: "Profil bilgileriniz başarıyla güncellendi.",
+				title: "Profile updated",
+				description: "Your profile information has been successfully updated.",
 			});
 		} catch (error) {
 			toast({
 				variant: "destructive",
-				title: "Profil güncellenemedi",
-				description: "Profil güncellenirken bir hata oluştu. Lütfen tekrar deneyin.",
+				title: "Profile update failed",
+				description: "An error occurred while updating your profile. Please try again.",
 			});
 		}
 	}
@@ -87,7 +87,7 @@ export function ProfileForm() {
 					name="firstName"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Ad</FormLabel>
+							<FormLabel>First Name</FormLabel>
 							<FormControl>
 								<Input {...field} />
 							</FormControl>
@@ -100,7 +100,7 @@ export function ProfileForm() {
 					name="lastName"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Soyad</FormLabel>
+							<FormLabel>Last Name</FormLabel>
 							<FormControl>
 								<Input {...field} />
 							</FormControl>
@@ -113,17 +113,17 @@ export function ProfileForm() {
 					name="email"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>E-posta</FormLabel>
+							<FormLabel>Email</FormLabel>
 							<FormControl>
 								<Input {...field} disabled />
 							</FormControl>
-							<FormDescription>E-posta adresi değiştirilemez.</FormDescription>
+							<FormDescription>Email address cannot be changed.</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
 				<Button type="submit" disabled={isLoading}>
-					{isLoading ? "Güncelleniyor..." : "Profili Güncelle"}
+					{isLoading ? "Updating..." : "Update Profile"}
 				</Button>
 			</form>
 		</Form>

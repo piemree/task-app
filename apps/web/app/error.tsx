@@ -22,21 +22,21 @@ export default function ErrorPage({
 		<div className="flex items-center justify-center min-h-screen">
 			<Card className="max-w-md w-full">
 				<CardHeader className="text-center">
-					<CardTitle className="text-3xl font-bold">Bir Hata Oluştu</CardTitle>
-					<CardDescription className="text-lg mt-2">Üzgünüz, bir şeyler yanlış gitti</CardDescription>
+					<CardTitle className="text-3xl font-bold">An Error Occurred</CardTitle>
+					<CardDescription className="text-lg mt-2">Sorry, something went wrong</CardDescription>
 				</CardHeader>
 				<CardContent className="text-center">
 					<div className="h-40 flex items-center justify-center mb-4">
 						<AlertCircleIcon className="w-32 h-32 text-destructive/70" strokeWidth={1} />
 					</div>
-					<p className="mb-4">Sayfayı yeniden yüklemeyi deneyin veya ana sayfaya dönün.</p>
+					<p className="mb-4">Try reloading the page or return to the home page.</p>
 				</CardContent>
 				<CardFooter className="flex justify-center gap-4">
 					<Button variant="outline" onClick={reset}>
-						Tekrar Dene
+						Try Again
 					</Button>
 					<Button asChild>
-						<Link href="/dashboard">Ana Sayfaya Dön</Link>
+						<Link href="/dashboard">Return to Home Page</Link>
 					</Button>
 				</CardFooter>
 			</Card>

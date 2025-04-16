@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
 import { logout } from "@/lib/redux/slices/authSlice";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export function UserNav() {
@@ -47,10 +48,14 @@ export function UserNav() {
 					</div>
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
-				<DropdownMenuItem onClick={() => router.push("/dashboard/profile")}>Profil</DropdownMenuItem>
-				<DropdownMenuItem onClick={() => router.push("/dashboard")}>Dashboard</DropdownMenuItem>
+				<Link href="/dashboard/profile" className="w-full">
+					<DropdownMenuItem>Profile</DropdownMenuItem>
+				</Link>
+				<Link href="/dashboard" className="w-full">
+					<DropdownMenuItem>Dashboard</DropdownMenuItem>
+				</Link>
 				<DropdownMenuSeparator />
-				<DropdownMenuItem onClick={handleLogout}>Çıkış Yap</DropdownMenuItem>
+				<DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);

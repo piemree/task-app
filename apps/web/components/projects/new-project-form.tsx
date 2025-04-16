@@ -13,7 +13,7 @@ import * as z from "zod";
 
 const formSchema = z.object({
 	name: z.string().min(1, {
-		message: "Proje adı zorunludur.",
+		message: "Project name is required.",
 	}),
 	description: z.string().optional(),
 });
@@ -35,15 +35,15 @@ export function NewProjectForm() {
 		try {
 			const result = await projectService.createProject(values);
 			toast({
-				title: "Proje oluşturuldu",
-				description: "Proje başarıyla oluşturuldu.",
+				title: "Project created",
+				description: "Project has been successfully created.",
 			});
 			router.push(`/dashboard/projects/${result._id}`);
 		} catch (error) {
 			toast({
 				variant: "destructive",
-				title: "Proje oluşturulamadı",
-				description: "Proje oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.",
+				title: "Project creation failed",
+				description: "An error occurred while creating the project. Please try again.",
 			});
 		} finally {
 			setIsLoading(false);
@@ -58,11 +58,11 @@ export function NewProjectForm() {
 					name="name"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Proje Adı</FormLabel>
+							<FormLabel>Project Name</FormLabel>
 							<FormControl>
-								<Input placeholder="Web Uygulaması" {...field} />
+								<Input placeholder="Web Application" {...field} />
 							</FormControl>
-							<FormDescription>Projenizin adı. Bu, projenizi tanımlamak için kullanılacaktır.</FormDescription>
+							<FormDescription>The name of your project. This will be used to identify your project.</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -72,17 +72,17 @@ export function NewProjectForm() {
 					name="description"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Açıklama</FormLabel>
+							<FormLabel>Description</FormLabel>
 							<FormControl>
-								<Textarea placeholder="Projenizin açıklaması..." className="resize-none" {...field} />
+								<Textarea placeholder="Description of your project..." className="resize-none" {...field} />
 							</FormControl>
-							<FormDescription>Projenizin kısa bir açıklaması. Bu isteğe bağlıdır.</FormDescription>
+							<FormDescription>A brief description of your project. This is optional.</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
 				<Button type="submit" disabled={isLoading}>
-					{isLoading ? "Oluşturuluyor..." : "Proje Oluştur"}
+					{isLoading ? "Creating..." : "Create Project"}
 				</Button>
 			</form>
 		</Form>

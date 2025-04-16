@@ -21,25 +21,26 @@ import { taskService } from "@/services/task-service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { ProjectResponse } from "@schemas/project.schema";
 import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 const formSchema = z.object({
 	title: z.string().min(1, {
-		message: "Görev başlığı zorunludur.",
+		message: "Task title is required.",
 	}),
 	description: z.string().min(1, {
-		message: "Görev açıklaması zorunludur.",
+		message: "Task description is required.",
 	}),
 	status: z.enum(["pending", "in_progress", "completed"], {
-		required_error: "Durum seçiniz.",
+		required_error: "Please select a status.",
 	}),
 	priority: z.enum(["low", "medium", "high"], {
-		required_error: "Öncelik seçiniz.",
+		required_error: "Please select a priority.",
 	}),
 	assignedTo: z.string().min(1, {
-		message: "Atanacak kullanıcı seçiniz.",
+		message: "Please select a user to assign.",
 	}),
 });
 
@@ -53,6 +54,7 @@ export function NewTaskDialog({ projectId, onSuccess }: NewTaskDialogProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [project, setProject] = useState<ProjectResponse | null>(null);
 	const [error, setError] = useState<string | null>(null);
+	const router = useRouter();
 
 	useEffect(() => {
 		const fetchProject = async () => {
@@ -61,7 +63,7 @@ export function NewTaskDialog({ projectId, onSuccess }: NewTaskDialogProps) {
 				const project = await projectService.getProject(projectId);
 				setProject(project);
 			} catch (err) {
-				setError(err instanceof Error ? err.message : "Bir hata oluştu");
+				setError(err instanceof Error ? err.message : "An error occurred");
 			} finally {
 				setIsLoading(false);
 			}
@@ -86,17 +88,18 @@ export function NewTaskDialog({ projectId, onSuccess }: NewTaskDialogProps) {
 			await taskService.createTask(projectId, values);
 
 			toast({
-				title: "Görev oluşturuldu",
-				description: "Görev başarıyla oluşturuldu.",
+				title: "Task created",
+				description: "Task has been created successfully.",
 			});
 			setIsOpen(false);
 			form.reset();
 			onSuccess();
+			router.refresh();
 		} catch (error) {
 			toast({
 				variant: "destructive",
-				title: "Görev oluşturulamadı",
-				description: "Görev oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.",
+				title: "Failed to create task",
+				description: "An error occurred while creating the task. Please try again.",
 			});
 		} finally {
 			setIsLoading(false);
@@ -108,13 +111,13 @@ export function NewTaskDialog({ projectId, onSuccess }: NewTaskDialogProps) {
 			<DialogTrigger asChild>
 				<Button>
 					<Plus className="mr-2 h-4 w-4" />
-					Görev Ekle
+					Add Task
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[500px]">
 				<DialogHeader>
-					<DialogTitle>Yeni Görev</DialogTitle>
-					<DialogDescription>Projeye yeni bir görev ekleyin.</DialogDescription>
+					<DialogTitle>New Task</DialogTitle>
+					<DialogDescription>Add a new task to the project.</DialogDescription>
 				</DialogHeader>
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -123,9 +126,9 @@ export function NewTaskDialog({ projectId, onSuccess }: NewTaskDialogProps) {
 							name="title"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Başlık</FormLabel>
+									<FormLabel>Title</FormLabel>
 									<FormControl>
-										<Input placeholder="Görev başlığı" {...field} />
+										<Input placeholder="Task title" {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -136,12 +139,12 @@ export function NewTaskDialog({ projectId, onSuccess }: NewTaskDialogProps) {
 							name="description"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Açıklama</FormLabel>
+									<FormLabel>Description</FormLabel>
 									<FormControl>
 										<TiptapEditor
 											value={field.value}
 											onChange={field.onChange}
-											placeholder="Görev açıklaması..."
+											placeholder="Task description..."
 											acceptHeading={true}
 										/>
 									</FormControl>
@@ -155,17 +158,17 @@ export function NewTaskDialog({ projectId, onSuccess }: NewTaskDialogProps) {
 								name="status"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Durum</FormLabel>
+										<FormLabel>Status</FormLabel>
 										<Select onValueChange={field.onChange} defaultValue={field.value}>
 											<FormControl>
 												<SelectTrigger>
-													<SelectValue placeholder="Durum seçin" />
+													<SelectValue placeholder="Select status" />
 												</SelectTrigger>
 											</FormControl>
 											<SelectContent>
-												<SelectItem value="pending">Beklemede</SelectItem>
-												<SelectItem value="in_progress">Devam Ediyor</SelectItem>
-												<SelectItem value="completed">Tamamlandı</SelectItem>
+												<SelectItem value="pending">Pending</SelectItem>
+												<SelectItem value="in_progress">In Progress</SelectItem>
+												<SelectItem value="completed">Completed</SelectItem>
 											</SelectContent>
 										</Select>
 										<FormMessage />
@@ -177,17 +180,17 @@ export function NewTaskDialog({ projectId, onSuccess }: NewTaskDialogProps) {
 								name="priority"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Öncelik</FormLabel>
+										<FormLabel>Priority</FormLabel>
 										<Select onValueChange={field.onChange} defaultValue={field.value}>
 											<FormControl>
 												<SelectTrigger>
-													<SelectValue placeholder="Öncelik seçin" />
+													<SelectValue placeholder="Select priority" />
 												</SelectTrigger>
 											</FormControl>
 											<SelectContent>
-												<SelectItem value="low">Düşük</SelectItem>
-												<SelectItem value="medium">Orta</SelectItem>
-												<SelectItem value="high">Yüksek</SelectItem>
+												<SelectItem value="low">Low</SelectItem>
+												<SelectItem value="medium">Medium</SelectItem>
+												<SelectItem value="high">High</SelectItem>
 											</SelectContent>
 										</Select>
 										<FormMessage />
@@ -200,11 +203,11 @@ export function NewTaskDialog({ projectId, onSuccess }: NewTaskDialogProps) {
 							name="assignedTo"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Atanan Kişi</FormLabel>
+									<FormLabel>Assigned To</FormLabel>
 									<Select onValueChange={field.onChange} defaultValue={field.value}>
 										<FormControl>
 											<SelectTrigger>
-												<SelectValue placeholder="Kullanıcı seçin" />
+												<SelectValue placeholder="Select user" />
 											</SelectTrigger>
 										</FormControl>
 										<SelectContent>
@@ -221,10 +224,10 @@ export function NewTaskDialog({ projectId, onSuccess }: NewTaskDialogProps) {
 						/>
 						<DialogFooter>
 							<Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
-								İptal
+								Cancel
 							</Button>
 							<Button type="submit" disabled={isLoading}>
-								{isLoading ? "Oluşturuluyor..." : "Görev Oluştur"}
+								{isLoading ? "Creating..." : "Create Task"}
 							</Button>
 						</DialogFooter>
 					</form>

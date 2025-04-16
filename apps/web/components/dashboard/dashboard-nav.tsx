@@ -16,12 +16,12 @@ const items = [
 		icon: LayoutDashboard,
 	},
 	{
-		title: "Yeni Proje",
+		title: "New Project",
 		href: "/dashboard/projects/new",
 		icon: FolderPlus,
 	},
 	{
-		title: "Profil",
+		title: "Profile",
 		href: "/dashboard/profile",
 		icon: Users,
 	},
@@ -55,7 +55,7 @@ export function DashboardNav() {
 			})}
 			<Button variant="ghost" className="w-full justify-start gap-2" onClick={handleLogout}>
 				<LogOut className="h-4 w-4" />
-				Çıkış Yap
+				Logout
 			</Button>
 		</nav>
 	);
