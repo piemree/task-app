@@ -9,6 +9,7 @@ import { truncateHtml } from "@/lib/utils";
 import type { TaskPriorityEnum, TaskResponse, TaskStatusEnum } from "@schemas/task.schema";
 import { CalendarDays, CheckCircle, Circle, Clock } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { NewTaskDialog } from "./new-task-dialog";
 
 interface TaskListProps {
 	projectId: string;
@@ -79,9 +80,7 @@ export function TaskList({ projectId, tasks, isLoading }: TaskListProps) {
 					</p>
 				</CardContent>
 				<CardFooter>
-					<Button variant="outline" className="w-full" onClick={() => {}}>
-						Görev Ekle
-					</Button>
+					<NewTaskDialog projectId={projectId} onSuccess={() => router.refresh()} />
 				</CardFooter>
 			</Card>
 		);

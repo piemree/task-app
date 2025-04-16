@@ -5,71 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/hooks/use-toast";
-import { projectService } from "@/services/project-service";
 import type { ProjectResponse } from "@schemas/project.schema";
 import { Folder, Plus, Users } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import Link from "next/link";
 
-export function ProjectList() {
-	const router = useRouter();
-	const [projects, setProjects] = useState<ProjectResponse[]>([]);
-	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
+interface ProjectListProps {
+	projects: ProjectResponse[];
+}
 
-	useEffect(() => {
-		const fetchProjects = async () => {
-			setIsLoading(true);
-			try {
-				const projects = await projectService.getProjects();
-				setProjects(projects);
-			} catch (err) {
-				setError(err instanceof Error ? err.message : "Bir hata oluştu");
-			} finally {
-				setIsLoading(false);
-			}
-		};
-		fetchProjects();
-	}, []);
-
-	const handleCreateProject = () => {
-		router.push("/dashboard/projects/new");
-	};
-
-	const handleProjectClick = (projectId: string) => {
-		router.push(`/dashboard/projects/${projectId}`);
-	};
-
-	if (isLoading) {
-		return (
-			<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-				{[1, 2, 3].map((i) => (
-					<Card key={i} className="overflow-hidden">
-						<CardHeader className="p-6">
-							<Skeleton className="h-6 w-1/2" />
-							<Skeleton className="h-4 w-full mt-2" />
-						</CardHeader>
-						<CardContent className="p-6 pt-0">
-							<Skeleton className="h-4 w-full" />
-							<Skeleton className="h-4 w-2/3 mt-2" />
-						</CardContent>
-						<CardFooter className="p-6 pt-0">
-							<Skeleton className="h-8 w-full" />
-						</CardFooter>
-					</Card>
-				))}
-			</div>
-		);
-	}
-
-	if (error) {
-		toast({
-			variant: "destructive",
-			title: "Hata",
-			description: error,
-		});
-	}
-
+export function ProjectList({ projects }: ProjectListProps) {
 	return (
 		<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 			{projects.map((project) => (
@@ -93,9 +37,11 @@ export function ProjectList() {
 						</div>
 					</CardContent>
 					<CardFooter className="p-6 pt-0">
-						<Button variant="default" className="w-full" onClick={() => handleProjectClick(project._id)}>
-							Projeyi Görüntüle
-						</Button>
+						<Link href={`/dashboard/projects/${project._id}`} className="w-full">
+							<Button variant="default" className="w-full">
+								Projeyi Görüntüle
+							</Button>
+						</Link>
 					</CardFooter>
 				</Card>
 			))}
@@ -109,10 +55,12 @@ export function ProjectList() {
 					<Folder className="h-16 w-16 text-muted-foreground" />
 				</CardContent>
 				<CardFooter className="p-6 pt-0">
-					<Button variant="outline" className="w-full" onClick={handleCreateProject}>
-						<Plus className="mr-2 h-4 w-4" />
-						Proje Oluştur
-					</Button>
+					<Link href="/dashboard/projects/new" className="w-full">
+						<Button variant="outline" className="w-full">
+							<Plus className="mr-2 h-4 w-4" />
+							Proje Oluştur
+						</Button>
+					</Link>
 				</CardFooter>
 			</Card>
 		</div>

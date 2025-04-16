@@ -24,10 +24,17 @@ import { useCallback, useEffect, useState } from "react";
 import { TiptapEditor } from "../tiptap-editor";
 import { AssignTaskDialog } from "./assign-task-dialog";
 
-export function TaskDetail({ projectId, taskId }: { projectId: string; taskId: string }) {
+type TaskDetailProps = {
+	projectId: string;
+	taskId: string;
+	initialTask?: TaskResponse | null;
+	initialTaskLogs?: TaskLogResponse[];
+};
+
+export function TaskDetail({ projectId, taskId, initialTask, initialTaskLogs }: TaskDetailProps) {
 	const router = useRouter();
-	const [currentTask, setCurrentTask] = useState<TaskResponse | null>(null);
-	const [taskLogs, setTaskLogs] = useState<TaskLogResponse[]>([]);
+	const [currentTask, setCurrentTask] = useState<TaskResponse | null>(initialTask || null);
+	const [taskLogs, setTaskLogs] = useState<TaskLogResponse[]>(initialTaskLogs || []);
 	const [activeTab, setActiveTab] = useState("task");
 	const [isLoading, setIsLoading] = useState(false);
 	const [isEditing, setIsEditing] = useState(false);
@@ -170,11 +177,6 @@ export function TaskDetail({ projectId, taskId }: { projectId: string; taskId: s
 				);
 		}
 	}, []);
-
-	useEffect(() => {
-		fetchTask();
-		fetchTaskLogs();
-	}, [fetchTask, fetchTaskLogs]);
 
 	if (isLoading && !currentTask) {
 		return (

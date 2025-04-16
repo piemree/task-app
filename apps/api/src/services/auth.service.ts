@@ -1,3 +1,4 @@
+import { StatusCodes } from "http-status-codes";
 import { AppError } from "../error/app-error";
 import { errorMessages } from "../error/error-messages";
 import { User } from "../models/user.model";
@@ -23,7 +24,7 @@ export class AuthService {
 		// Email kontrolü
 		const existingUser = await User.findOne({ email: args.data.email });
 		if (existingUser) {
-			throw new AppError(errorMessages.USER_ALREADY_EXISTS, 400);
+			throw new AppError(errorMessages.USER_ALREADY_EXISTS, StatusCodes.BAD_REQUEST);
 		}
 
 		// Yeni kullanıcı oluştur
@@ -36,13 +37,13 @@ export class AuthService {
 		// Kullanıcıyı bul
 		const user = await User.findOne({ email: args.data.email });
 		if (!user) {
-			throw new AppError(errorMessages.USER_NOT_FOUND, 404);
+			throw new AppError(errorMessages.INVALID_CREDENTIALS, StatusCodes.UNAUTHORIZED);
 		}
 
 		// Şifreyi kontrol et
 		const isPasswordValid = await user.comparePassword(args.data.password);
 		if (!isPasswordValid) {
-			throw new AppError(errorMessages.INVALID_CREDENTIALS, 401);
+			throw new AppError(errorMessages.INVALID_CREDENTIALS, StatusCodes.UNAUTHORIZED);
 		}
 
 		// JWT token oluştur
@@ -57,7 +58,7 @@ export class AuthService {
 	async getUserProfile(args: { userId: string }): Promise<UserResponse> {
 		const user = await User.findById(args.userId);
 		if (!user) {
-			throw new AppError(errorMessages.USER_NOT_FOUND, 404);
+			throw new AppError(errorMessages.USER_NOT_FOUND, StatusCodes.NOT_FOUND);
 		}
 
 		return omit(user.toObject(), ["password"]);
@@ -66,7 +67,7 @@ export class AuthService {
 	async updateUserProfile(args: { userId: string; data: UpdateUserProfileInput }): Promise<UserResponse> {
 		const user = await User.findByIdAndUpdate(args.userId, args.data, { new: true });
 		if (!user) {
-			throw new AppError(errorMessages.USER_NOT_FOUND, 404);
+			throw new AppError(errorMessages.USER_NOT_FOUND, StatusCodes.NOT_FOUND);
 		}
 		return omit(user.toObject(), ["password"]);
 	}

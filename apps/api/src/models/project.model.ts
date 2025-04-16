@@ -14,7 +14,6 @@ const projectSchema = new Schema<IProject>(
 		},
 		description: {
 			type: String,
-			required: true,
 			trim: true,
 		},
 		owner: {

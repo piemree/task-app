@@ -29,8 +29,24 @@ async function client<T>(endpoint: string, options: FetchOptions = {}): Promise<
 
 	// Auth header ekle
 	if (withAuth) {
-		// Token'ı nereden alacağınıza bağlı olarak değişir
-		const token = localStorage.getItem("token") || "";
+		let token = "";
+
+		// Server tarafında mı yoksa client tarafında mı olduğumuzu kontrol et
+		if (typeof window === "undefined") {
+			// Server-side - cookie'den token'ı al
+			try {
+				// Dinamik bir import kullanarak server tarafında çalışan bir modül import etme
+				const { cookies } = await import("next/headers");
+				const cookieStore = await cookies();
+				token = cookieStore.get("token")?.value || "";
+			} catch (error) {
+				console.error("Cookie okuma hatası:", error);
+			}
+		} else {
+			// Client-side - localStorage'dan token'ı al
+			token = localStorage.getItem("token") || "";
+		}
+
 		if (token) {
 			headers.append("Authorization", `Bearer ${token}`);
 		}

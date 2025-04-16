@@ -9,42 +9,45 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { projectService } from "@/services/project-service";
 import { taskService } from "@/services/task-service";
 import type { ProjectResponse } from "@schemas/project.schema";
 import type { TaskResponse } from "@schemas/task.schema";
 import { CalendarDays, Users } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import { useCallback, useState } from "react";
 
-export function ProjectDetail({ projectId }: { projectId: string }) {
-	const router = useRouter();
-	const [project, setProject] = useState<ProjectResponse | null>(null);
+interface ProjectDetailProps {
+	projectId: string;
+	initialProject?: ProjectResponse | null;
+	initialTasks?: TaskResponse[];
+}
+
+export function ProjectDetail({ projectId, initialProject, initialTasks }: ProjectDetailProps) {
+	const [project, setProject] = useState<ProjectResponse | null>(initialProject || null);
 	const [isLoading, setIsLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
-	const [tasks, setTasks] = useState<TaskResponse[]>([]);
+	const [tasks, setTasks] = useState<TaskResponse[]>(initialTasks || []);
 
-	const fetchProject = useCallback(async () => {
+	const fetchTasks = useCallback(async () => {
 		setIsLoading(true);
 		try {
-			const project = await projectService.getProject(projectId);
-			setProject(project);
-		} catch (err) {
-			setError(err instanceof Error ? err.message : "Bir hata oluştu");
+			const tasks = await taskService.getTasks(projectId);
+			setTasks(tasks);
+		} catch (error) {
+			console.error(error);
 		} finally {
 			setIsLoading(false);
 		}
 	}, [projectId]);
 
-	const fetchTasks = useCallback(async () => {
-		const tasks = await taskService.getTasks(projectId);
-		setTasks(tasks);
-	}, [projectId]);
-
-	useEffect(() => {
-		fetchProject();
-		fetchTasks();
-	}, [fetchProject, fetchTasks]);
+	const onRemoveMember = (userId: string) => {
+		setProject((prevProject) => {
+			if (!prevProject) return null;
+			return {
+				...prevProject,
+				members: prevProject.members.filter((member) => member.user._id !== userId),
+			};
+		});
+	};
 
 	if (isLoading) {
 		return (
@@ -92,9 +95,11 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
 			<div className="flex flex-col items-center justify-center py-12">
 				<h2 className="text-xl font-semibold">Proje bulunamadı</h2>
 				<p className="text-muted-foreground mt-2">İstediğiniz proje bulunamadı veya erişim izniniz yok.</p>
-				<Button variant="outline" className="mt-4" onClick={() => router.push("/dashboard")}>
-					Dashboard'a Dön
-				</Button>
+				<Link href="/dashboard">
+					<Button variant="outline" className="mt-4">
+						Dashboard'a Dön
+					</Button>
+				</Link>
 			</div>
 		);
 	}
@@ -144,7 +149,7 @@ export function ProjectDetail({ projectId }: { projectId: string }) {
 					<TaskList projectId={project._id} tasks={tasks} isLoading={isLoading} />
 				</TabsContent>
 				<TabsContent value="members" className="mt-4">
-					<ProjectMembers projectId={project._id} members={project.members} />
+					<ProjectMembers projectId={project._id} members={project.members} onRemoveMember={onRemoveMember} />
 				</TabsContent>
 			</Tabs>
 		</div>

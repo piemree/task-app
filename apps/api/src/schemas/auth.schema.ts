@@ -8,16 +8,16 @@ extendZodWithOpenApi(z);
 export const userDbSchema = z.object({
 	_id: objectIdSchema,
 	firstName: z.string().min(1).openapi({
-		example: "Emre",
+		example: "Örnek",
 	}),
 	lastName: z.string().min(1).openapi({
-		example: "Demir",
+		example: "Kullanıcı",
 	}),
 	password: z.string().min(8).openapi({
 		example: "Guclu123Parola!",
 	}),
 	email: z.string().email().openapi({
-		example: "emre.demir@sirket.com",
+		example: "ornek.kullanici@sirket.com",
 	}),
 	createdAt: z.date().openapi({
 		example: "2021-01-01",

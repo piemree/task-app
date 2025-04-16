@@ -4,10 +4,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { useAppDispatch, useAppSelector } from "@/lib/redux/hooks";
-import { updateToken, updateUser } from "@/lib/redux/slices/authSlice";
-import { authService } from "@/services/auth-service";
+import { login } from "@/lib/redux/slices/authSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -23,7 +23,7 @@ const formSchema = z.object({
 export function LoginForm() {
 	const router = useRouter();
 	const dispatch = useAppDispatch();
-	const { isLoading, error } = useAppSelector((state) => state.auth);
+	const { isLoading, error, token } = useAppSelector((state) => state.auth);
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -33,25 +33,26 @@ export function LoginForm() {
 		},
 	});
 
-	async function onSubmit(values: z.infer<typeof formSchema>) {
-		try {
-			const response = await authService.login({ email: values.email, password: values.password });
-			localStorage.setItem("token", response.token);
-			document.cookie = `token=${response.token}; path=/; max-age=86400`;
-			dispatch(updateUser(response.user));
-			dispatch(updateToken(response.token));
-			toast({
-				title: "Giriş başarılı",
-				description: "Hoş geldiniz!",
-			});
+	// Kullanıcı başarıyla giriş yaptığında dashboard'a yönlendir
+	useEffect(() => {
+		if (token) {
 			router.push("/dashboard");
-		} catch (error) {
+		}
+	}, [token, router]);
+
+	// Hata mesajı göster
+	useEffect(() => {
+		if (error) {
 			toast({
 				variant: "destructive",
 				title: "Giriş başarısız",
-				description: "E-posta veya şifre hatalı.",
+				description: error || "E-posta veya şifre hatalı.",
 			});
 		}
+	}, [error]);
+
+	async function onSubmit(values: z.infer<typeof formSchema>) {
+		await dispatch(login(values));
 	}
 
 	return (

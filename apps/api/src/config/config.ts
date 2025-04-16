@@ -1,8 +1,7 @@
 import dotenv from "dotenv";
 import type ms from "ms";
 
-const isDev = process.env.NODE_ENV === "development";
-dotenv.config({ path: isDev ? ".env.dev" : ".env" });
+dotenv.config();
 
 interface Config {
 	port: number;

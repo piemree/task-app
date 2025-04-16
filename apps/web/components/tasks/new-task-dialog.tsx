@@ -1,5 +1,6 @@
 "use client";
 
+import { TiptapEditor } from "@/components/tiptap-editor";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -137,7 +138,12 @@ export function NewTaskDialog({ projectId, onSuccess }: NewTaskDialogProps) {
 								<FormItem>
 									<FormLabel>Açıklama</FormLabel>
 									<FormControl>
-										<Textarea placeholder="Görev açıklaması" className="resize-none" {...field} />
+										<TiptapEditor
+											value={field.value}
+											onChange={field.onChange}
+											placeholder="Görev açıklaması..."
+											acceptHeading={true}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>

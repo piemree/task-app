@@ -97,16 +97,12 @@ export class ProjectService {
 		});
 
 		const inviteLink = `${config.frontendUrl}/invite/${token}`;
-		const registerLink = `${config.frontendUrl}/register`;
 		this.mailService.sendMail({
 			to: args.email,
 			subject: "Project Invitation",
-			text: `You are invited to join the project ${project.name} as ${args.role}
-Please Register to Task App with the link below:
-Link: ${registerLink}
+			text: `You are invited to join the project ${project.name} as ${args.role} 
 Please click the link below to accept the invitation:
-Link: ${inviteLink}
-			`,
+Link: ${inviteLink}`,
 		});
 
 		return { inviteToken: token };
@@ -126,6 +122,11 @@ Link: ${inviteLink}
 		const project = await Project.findById(payload.projectId);
 		if (!project) {
 			throw new AppError(errorMessages.PROJECT_NOT_FOUND, 404);
+		}
+
+		const isMemberAlready = project.members.some((member) => member.user.toString() === user._id.toString());
+		if (isMemberAlready) {
+			return { success: true, isUnRegistered: false };
 		}
 
 		project.members.push({ user: user._id, role: payload.role });

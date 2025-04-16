@@ -85,8 +85,8 @@ export function TiptapEditor({ value, onChange, placeholder, acceptHeading = fal
 
 	return (
 		<div className="space-y-2 w-full">
-			<div className="overflow-x-auto pb-1.5 no-scrollbar">
-				<div className="flex items-center gap-1 border rounded-md p-1.5 bg-muted/50 min-w-max">
+			<div className="overflow-x-auto pb-1.5 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent">
+				<div className="flex flex-wrap items-center gap-1 border rounded-md p-1.5 bg-muted/50">
 					<Select
 						value={
 							editor.isActive("paragraph")
@@ -108,12 +108,9 @@ export function TiptapEditor({ value, onChange, placeholder, acceptHeading = fal
 							}
 						}}
 					>
-						<SelectTrigger
-							className="w-[100px] sm:w-[140px] h-8 bg-background text-foreground text-xs sm:text-sm"
-							type="button"
-						>
-							<Type className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-							<SelectValue placeholder="Stil seçin" />
+						<SelectTrigger className="w-[80px] h-7 text-xs" type="button">
+							<Type className="w-3 h-3 mr-1" />
+							<SelectValue placeholder="Stil" />
 						</SelectTrigger>
 						<SelectContent>
 							<SelectItem value="paragraph">Normal</SelectItem>
@@ -127,108 +124,108 @@ export function TiptapEditor({ value, onChange, placeholder, acceptHeading = fal
 						</SelectContent>
 					</Select>
 
-					<div className="h-6 w-[1px] bg-border mx-1" />
+					<div className="h-6 w-[1px] bg-border mx-0.5" />
 
 					<div className="flex items-center gap-0.5 bg-background rounded-md">
 						<Button
 							variant="ghost"
 							size="icon"
 							type="button"
-							className={cn("h-7 w-7 sm:h-8 sm:w-8", editor.isActive("bold") ? "bg-muted" : "")}
+							className={cn("h-7 w-7", editor.isActive("bold") ? "bg-muted" : "")}
 							onClick={() => editor.chain().focus().toggleBold().run()}
 							data-active={editor.isActive("bold")}
 						>
-							<Bold className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+							<Bold className="w-3.5 h-3.5" />
 						</Button>
 						<Button
 							variant="ghost"
 							size="icon"
 							type="button"
-							className={cn("h-7 w-7 sm:h-8 sm:w-8", editor.isActive("italic") ? "bg-muted" : "")}
+							className={cn("h-7 w-7", editor.isActive("italic") ? "bg-muted" : "")}
 							onClick={() => editor.chain().focus().toggleItalic().run()}
 							data-active={editor.isActive("italic")}
 						>
-							<Italic className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+							<Italic className="w-3.5 h-3.5" />
 						</Button>
 						<Button
 							variant="ghost"
 							size="icon"
 							type="button"
-							className={cn("h-7 w-7 sm:h-8 sm:w-8", editor.isActive("underline") ? "bg-muted" : "")}
+							className={cn("h-7 w-7", editor.isActive("underline") ? "bg-muted" : "")}
 							onClick={() => editor.chain().focus().toggleUnderline().run()}
 							data-active={editor.isActive("underline")}
 						>
-							<Underline className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+							<Underline className="w-3.5 h-3.5" />
 						</Button>
 					</div>
 
-					<div className="h-6 w-[1px] bg-border mx-1" />
+					<div className="h-6 w-[1px] bg-border mx-0.5" />
 
 					<div className="flex items-center gap-0.5 bg-background rounded-md">
 						<Button
 							variant="ghost"
 							size="icon"
 							type="button"
-							className={cn("h-7 w-7 sm:h-8 sm:w-8", editor.isActive("bulletList") ? "bg-muted" : "")}
+							className={cn("h-7 w-7", editor.isActive("bulletList") ? "bg-muted" : "")}
 							onClick={() => editor.chain().focus().toggleBulletList().run()}
 							data-active={editor.isActive("bulletList")}
 						>
-							<List className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+							<List className="w-3.5 h-3.5" />
 						</Button>
 						<Button
 							variant="ghost"
 							size="icon"
 							type="button"
-							className={cn("h-7 w-7 sm:h-8 sm:w-8", editor.isActive("orderedList") ? "bg-muted" : "")}
+							className={cn("h-7 w-7", editor.isActive("orderedList") ? "bg-muted" : "")}
 							onClick={() => editor.chain().focus().toggleOrderedList().run()}
 							data-active={editor.isActive("orderedList")}
 						>
-							<ListOrdered className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+							<ListOrdered className="w-3.5 h-3.5" />
 						</Button>
 					</div>
 
-					<div className="h-6 w-[1px] bg-border mx-1" />
+					<div className="h-6 w-[1px] bg-border mx-0.5" />
 
 					<div className="flex items-center gap-0.5 bg-background rounded-md">
 						<Button
 							variant="ghost"
 							size="icon"
 							type="button"
-							className={cn("h-7 w-7 sm:h-8 sm:w-8", editor.isActive({ textAlign: "left" }) ? "bg-muted" : "")}
+							className={cn("h-7 w-7", editor.isActive({ textAlign: "left" }) ? "bg-muted" : "")}
 							onClick={() => editor.chain().focus().setTextAlign("left").run()}
 							data-active={editor.isActive({ textAlign: "left" })}
 						>
-							<AlignLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+							<AlignLeft className="w-3.5 h-3.5" />
 						</Button>
 						<Button
 							variant="ghost"
 							size="icon"
 							type="button"
-							className={cn("h-7 w-7 sm:h-8 sm:w-8", editor.isActive({ textAlign: "center" }) ? "bg-muted" : "")}
+							className={cn("h-7 w-7", editor.isActive({ textAlign: "center" }) ? "bg-muted" : "")}
 							onClick={() => editor.chain().focus().setTextAlign("center").run()}
 							data-active={editor.isActive({ textAlign: "center" })}
 						>
-							<AlignCenter className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+							<AlignCenter className="w-3.5 h-3.5" />
 						</Button>
 						<Button
 							variant="ghost"
 							size="icon"
 							type="button"
-							className={cn("h-7 w-7 sm:h-8 sm:w-8", editor.isActive({ textAlign: "right" }) ? "bg-muted" : "")}
+							className={cn("h-7 w-7", editor.isActive({ textAlign: "right" }) ? "bg-muted" : "")}
 							onClick={() => editor.chain().focus().setTextAlign("right").run()}
 							data-active={editor.isActive({ textAlign: "right" })}
 						>
-							<AlignRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+							<AlignRight className="w-3.5 h-3.5" />
 						</Button>
 						<Button
 							variant="ghost"
 							size="icon"
 							type="button"
-							className={cn("h-7 w-7 sm:h-8 sm:w-8", editor.isActive({ textAlign: "justify" }) ? "bg-muted" : "")}
+							className={cn("h-7 w-7", editor.isActive({ textAlign: "justify" }) ? "bg-muted" : "")}
 							onClick={() => editor.chain().focus().setTextAlign("justify").run()}
 							data-active={editor.isActive({ textAlign: "justify" })}
 						>
-							<AlignJustify className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+							<AlignJustify className="w-3.5 h-3.5" />
 						</Button>
 					</div>
 				</div>
