@@ -67,9 +67,16 @@ export function InviteRegisterForm({ tokenPayload, token }: InviteRegisterFormPr
 		try {
 			// set loading to true
 			setIsLoading(true);
-			await dispatch(register(values));
+
+			// Register işlemini yapalım ve sonucu bekleyelim
+			await dispatch(register(values)).unwrap();
+
+			// Davet kabul etme işlemini gerçekleştirelim
 			await projectService.acceptInvite({ inviteToken: token });
-			await dispatch(login(form.getValues()));
+
+			// Giriş yapalım - unwrap ile hata kontrolü ekleyelim
+			await dispatch(login(form.getValues())).unwrap();
+
 			toast({
 				title: "İşlem başarılı",
 				description: "Davet başarıyla kabul edildi.",
@@ -79,6 +86,7 @@ export function InviteRegisterForm({ tokenPayload, token }: InviteRegisterFormPr
 			toast({
 				variant: "destructive",
 				title: "İşlem başarısız",
+				description: error instanceof Error ? error.message : "Bir hata oluştu. Lütfen tekrar deneyin.",
 			});
 		} finally {
 			setIsLoading(false);

@@ -54,13 +54,16 @@ export function RegisterForm() {
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
-			await dispatch(register(values));
+			await dispatch(register(values)).unwrap();
+
+			// Register işlemi başarılı olursa
 			toast({
 				title: "Kayıt başarılı",
 				description: "Hesabınız oluşturuldu. Otomatik giriş yapılıyor...",
 			});
-			await dispatch(login(values));
 
+			// Login işlemi için de unwrap kullanarak hata kontrolü yapıyoruz
+			await dispatch(login(values)).unwrap();
 			router.push("/dashboard");
 		} catch (error) {
 			toast({
@@ -81,7 +84,7 @@ export function RegisterForm() {
 						<FormItem>
 							<FormLabel>Ad</FormLabel>
 							<FormControl>
-								<Input placeholder="Emre" {...field} />
+								<Input placeholder="Örnek" {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -94,7 +97,7 @@ export function RegisterForm() {
 						<FormItem>
 							<FormLabel>Soyad</FormLabel>
 							<FormControl>
-								<Input placeholder="Demir" {...field} />
+								<Input placeholder="Kullanıcı" {...field} />
 							</FormControl>
 							<FormMessage />
 						</FormItem>
