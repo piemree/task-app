@@ -216,6 +216,14 @@ When the API is running, API documentation created with Swagger UI can be access
 http://localhost:5000/docs
 ```
 
+### Docker Image
+
+API Docker image is available on GitHub Container Registry:
+
+```
+ghcr.io/piemree/task-app-api:latest
+```
+
 ### API Testing
 
 The API application can be tested with Vitest:
