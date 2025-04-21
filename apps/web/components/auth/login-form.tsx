@@ -33,13 +33,6 @@ export function LoginForm() {
 		},
 	});
 
-	// Redirect to dashboard when user successfully logs in
-	useEffect(() => {
-		if (token) {
-			router.push("/dashboard");
-		}
-	}, [token, router]);
-
 	// Show error message
 	useEffect(() => {
 		if (error) {
